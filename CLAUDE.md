@@ -20,6 +20,7 @@ Inspired by the moment before service when everything is ready. Austere elegance
 ### Color Palette
 
 **Light Mode (Warm Paper)**
+
 ```
 Background:      #F7F5F0
 Surface:         #FFFDF9
@@ -31,6 +32,7 @@ Border:          #E7E5E4
 ```
 
 **Dark Mode (Ink & Copper)**
+
 ```
 Background:      #0C0A09
 Surface:         #1C1917
@@ -75,12 +77,12 @@ Recipes are markdown files with YAML frontmatter. Multi-component structure with
 ### Frontmatter Schema
 
 ```yaml
-title: "Kombu-Cured Low-Temp Cod"
-subtitle: "Agar-Kombu Emulsion, Parsley Oil, Crispy Skin"
+title: 'Kombu-Cured Low-Temp Cod'
+subtitle: 'Agar-Kombu Emulsion, Parsley Oil, Crispy Skin'
 category: main | starter | dessert | side | drink | sauce
 difficulty: easy | intermediate | advanced
-active_time: "35 min"
-total_time: "48h"
+active_time: '35 min'
+total_time: '48h'
 serves: 2
 tags: [seafood, sous-vide, make-ahead]
 ```
@@ -158,9 +160,9 @@ src/
 
 ### Next Steps
 
-1. **Start Sprint 1** - Initialize SvelteKit project (MISE-14)
-2. **Manual JIRA cleanup** - Move issues to sprints 4, 5, 7, 9, 10 (hit API rate limit)
-3. **Delete `mise/` subfolder** - Artifact from early SvelteKit init attempt
+1. **MISE-15** - Configure @sveltejs/adapter-static for SSG
+2. **MISE-16** - Create project folder structure
+3. **MISE-17** - Install core dependencies (gray-matter, marked, fuse.js)
 
 ### Scripts
 
