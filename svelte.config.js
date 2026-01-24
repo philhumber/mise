@@ -9,6 +9,11 @@ const config = {
 		}),
 		paths: {
 			base: '/mise'
+		},
+		alias: {
+			$components: 'src/lib/components',
+			$styles: 'src/lib/styles',
+			$assets: 'src/lib/assets'
 		}
 	}
 };
