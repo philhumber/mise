@@ -24,3 +24,20 @@ vite.config.ts.timestamp-*
 
 # Claude Code
 .claude/
+
+# IDE
+.idea/
+*.sublime-*
+
+# Test coverage
+coverage/
+
+# Logs
+*.log
+npm-debug.log*
+
+# TypeScript
+*.tsbuildinfo
+
+# Misc
+*.local
