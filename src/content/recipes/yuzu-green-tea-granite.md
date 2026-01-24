@@ -1,3 +1,14 @@
+---
+title: 'Yuzu–Green Tea Granité'
+subtitle: 'Silken Tofu Cream, White Sesame Tuile'
+category: dessert
+difficulty: intermediate
+active_time: '45 min'
+total_time: '24h'
+serves: 4
+tags: [japanese, make-ahead, vegetarian]
+---
+
 # Yuzu–Green Tea Granité
 
 **Silken tofu cream · white sesame tuile**

@@ -1,3 +1,14 @@
+---
+title: 'Kitchen Hydration Drink'
+subtitle: 'Electrolyte Refresher for Hot Environments'
+category: drink
+difficulty: easy
+active_time: '2 min'
+total_time: '2 min'
+serves: 1
+tags: [quick, hydration, kitchen-staple]
+---
+
 # Kitchen Hydration Drink
 
 _Electrolyte refresher for hot environments_

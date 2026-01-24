@@ -1,3 +1,14 @@
+---
+title: 'Kombu-Cured Low-Temp Cod'
+subtitle: 'Agar-Kombu Emulsion, Parsley Oil, Crispy Skin'
+category: main
+difficulty: advanced
+active_time: '60 min'
+total_time: '48h'
+serves: 2
+tags: [seafood, sous-vide, make-ahead, fine-dining]
+---
+
 # KOMBU-CURED LOW-TEMP COD
 
 _Agar-Kombu Emulsion, Parsley Oil, Crispy Skin, Kombu Powder_
