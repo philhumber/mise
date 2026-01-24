@@ -119,6 +119,8 @@ tags: [seafood, sous-vide, make-ahead]
 ```
 src/
 ├── lib/
+│   ├── assets/
+│   │   └── favicon.svg
 │   ├── components/
 │   │   ├── RecipeCard.svelte
 │   │   ├── SearchBar.svelte
