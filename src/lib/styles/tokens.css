@@ -64,3 +64,194 @@
 	--shadow-card: 0 1px 3px rgba(0, 0, 0, 0.2), 0 4px 12px rgba(0, 0, 0, 0.15);
 	--shadow-card-hover: 0 2px 8px rgba(0, 0, 0, 0.25), 0 8px 24px rgba(0, 0, 0, 0.2);
 }
+
+/* ==========================================================================
+   Paper Texture Utilities
+   ========================================================================== */
+
+.texture-paper {
+	position: relative;
+}
+
+.texture-paper::before {
+	content: '';
+	position: absolute;
+	inset: 0;
+	background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+	opacity: 0.35;
+	pointer-events: none;
+	border-radius: inherit;
+}
+
+.texture-subtle {
+	position: relative;
+}
+
+.texture-subtle::before {
+	content: '';
+	position: absolute;
+	inset: 0;
+	background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+	opacity: 0.12;
+	pointer-events: none;
+	border-radius: inherit;
+}
+
+[data-theme='dark'] .texture-paper::before {
+	opacity: 0.15;
+}
+
+[data-theme='dark'] .texture-subtle::before {
+	opacity: 0.06;
+}
+
+/* ==========================================================================
+   Typography Utilities
+   ========================================================================== */
+
+.text-display {
+	font-family: var(--font-display);
+	font-weight: 500;
+	line-height: 1.2;
+	letter-spacing: -0.01em;
+}
+
+.text-body {
+	font-family: var(--font-body);
+	font-weight: 400;
+	line-height: 1.6;
+}
+
+.text-meta {
+	font-family: var(--font-body);
+	font-size: var(--font-size-meta);
+	font-weight: 400;
+	line-height: 1.4;
+	color: var(--color-text-secondary);
+}
+
+.text-logo {
+	font-family: var(--font-display);
+	font-size: var(--font-size-logo);
+	font-weight: 400;
+	letter-spacing: 0.04em;
+	text-transform: lowercase;
+}
+
+/* ==========================================================================
+   Pill Component
+   ========================================================================== */
+
+.pill {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	min-height: 44px;
+	padding: var(--spacing-sm) var(--spacing-lg);
+	font-family: var(--font-body);
+	font-size: var(--font-size-meta);
+	font-weight: 500;
+	color: var(--color-text-secondary);
+	background-color: transparent;
+	border: 1px solid var(--color-border);
+	border-radius: var(--radius-sm);
+	cursor: pointer;
+	transition: all var(--transition-fast);
+	user-select: none;
+}
+
+.pill:hover {
+	color: var(--color-text-primary);
+	border-color: var(--color-border-strong);
+}
+
+.pill:focus-visible {
+	outline: 2px solid var(--color-accent);
+	outline-offset: 2px;
+}
+
+.pill-active,
+.pill.active {
+	color: var(--color-accent);
+	background-color: var(--color-highlight);
+	border-color: var(--color-accent);
+}
+
+.pill-active:hover,
+.pill.active:hover {
+	color: var(--color-accent);
+	border-color: var(--color-accent-muted);
+}
+
+/* ==========================================================================
+   Accessibility
+   ========================================================================== */
+
+/* Global focus-visible styles for interactive elements */
+a:focus-visible,
+button:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible,
+[tabindex]:focus-visible {
+	outline: 2px solid var(--color-accent);
+	outline-offset: 2px;
+}
+
+/* Remove default focus outline (focus-visible handles keyboard focus) */
+a:focus:not(:focus-visible),
+button:focus:not(:focus-visible),
+input:focus:not(:focus-visible),
+select:focus:not(:focus-visible),
+textarea:focus:not(:focus-visible),
+[tabindex]:focus:not(:focus-visible) {
+	outline: none;
+}
+
+/* Visually hidden - accessible to screen readers */
+.sr-only {
+	position: absolute;
+	width: 1px;
+	height: 1px;
+	padding: 0;
+	margin: -1px;
+	overflow: hidden;
+	clip: rect(0, 0, 0, 0);
+	white-space: nowrap;
+	border: 0;
+}
+
+/* Skip link - visible on focus */
+.skip-link {
+	position: absolute;
+	top: -100%;
+	left: var(--spacing-lg);
+	z-index: 9999;
+	padding: var(--spacing-sm) var(--spacing-lg);
+	font-family: var(--font-body);
+	font-size: var(--font-size-meta);
+	color: var(--color-text-primary);
+	background-color: var(--color-surface);
+	border: 1px solid var(--color-border);
+	border-radius: var(--radius-sm);
+	transition: top var(--transition-fast);
+}
+
+.skip-link:focus {
+	top: var(--spacing-lg);
+}
+
+/* ==========================================================================
+   Reduced Motion
+   ========================================================================== */
+
+@media (prefers-reduced-motion: reduce) {
+	*,
+	*::before,
+	*::after {
+		animation-duration: 0.01ms !important;
+		animation-iteration-count: 1 !important;
+		transition-duration: 0.01ms !important;
+		scroll-behavior: auto !important;
+	}
+}
