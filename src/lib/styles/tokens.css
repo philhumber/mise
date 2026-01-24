@@ -1,0 +1,66 @@
+/* Mise - "The Pass" Design System Tokens */
+
+:root {
+	/* Light Mode - Warm Paper */
+	--color-bg: #f7f5f0;
+	--color-surface: #fffdf9;
+	--color-text-primary: #1c1917;
+	--color-text-secondary: #57534e;
+	--color-text-tertiary: #a8a29e;
+	--color-accent: #b45309;
+	--color-accent-muted: #d97706;
+	--color-border: #e7e5e4;
+	--color-border-strong: #d6d3d1;
+	--color-highlight: rgba(180, 83, 9, 0.08);
+
+	/* Typography */
+	--font-display: 'Cormorant Garamond', Georgia, serif;
+	--font-body: 'DM Sans', system-ui, sans-serif;
+
+	--font-size-logo: 28px;
+	--font-size-title: 22px;
+	--font-size-subtitle: 17px;
+	--font-size-body: 15px;
+	--font-size-meta: 13px;
+	--font-size-small: 12px;
+
+	/* Spacing */
+	--spacing-xs: 4px;
+	--spacing-sm: 8px;
+	--spacing-md: 12px;
+	--spacing-lg: 16px;
+	--spacing-xl: 20px;
+	--spacing-2xl: 28px;
+	--spacing-3xl: 40px;
+	--spacing-4xl: 56px;
+
+	/* Radii */
+	--radius-sm: 3px;
+	--radius-md: 6px;
+
+	/* Shadows */
+	--shadow-card: 0 1px 3px rgba(28, 25, 23, 0.04), 0 4px 12px rgba(28, 25, 23, 0.03);
+	--shadow-card-hover: 0 2px 8px rgba(28, 25, 23, 0.06), 0 8px 24px rgba(28, 25, 23, 0.05);
+
+	/* Transitions */
+	--transition-fast: 150ms ease;
+	--transition-base: 250ms ease;
+	--transition-slow: 400ms ease;
+}
+
+/* Dark Mode - Ink & Copper */
+[data-theme='dark'] {
+	--color-bg: #0c0a09;
+	--color-surface: #1c1917;
+	--color-text-primary: #fafaf9;
+	--color-text-secondary: #a8a29e;
+	--color-text-tertiary: #78716c;
+	--color-accent: #f59e0b;
+	--color-accent-muted: #d97706;
+	--color-border: #292524;
+	--color-border-strong: #44403c;
+	--color-highlight: rgba(245, 158, 11, 0.1);
+
+	--shadow-card: 0 1px 3px rgba(0, 0, 0, 0.2), 0 4px 12px rgba(0, 0, 0, 0.15);
+	--shadow-card-hover: 0 2px 8px rgba(0, 0, 0, 0.25), 0 8px 24px rgba(0, 0, 0, 0.2);
+}
