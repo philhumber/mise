@@ -1,0 +1,173 @@
+{
+  "epics": [
+    {
+      "key": "PROJECT_SETUP",
+      "name": "Project Setup & Infrastructure",
+      "description": "Initialize SvelteKit project with TypeScript, configure tooling, and establish folder structure"
+    },
+    {
+      "key": "DESIGN_SYSTEM",
+      "name": "Design System - The Pass",
+      "description": "Implement the 'The Pass' design system with CSS tokens, themes, typography, and accessibility"
+    },
+    {
+      "key": "DATA_LAYER",
+      "name": "Data Layer & Content",
+      "description": "Recipe data model, markdown parsing, search functionality, and content loading"
+    },
+    {
+      "key": "HOME_PAGE",
+      "name": "Home/Browse Page",
+      "description": "Recipe listing, search, category filtering, and recipe card components"
+    },
+    {
+      "key": "RECIPE_DETAIL",
+      "name": "Recipe Detail Page",
+      "description": "Individual recipe view with timeline, ingredients, method steps, and notes"
+    },
+    {
+      "key": "POLISH_PWA",
+      "name": "Polish & PWA",
+      "description": "Mobile optimization, PWA setup, offline support, and accessibility"
+    },
+    {
+      "key": "COOK_MODE",
+      "name": "Cook Mode (Future)",
+      "description": "Step-by-step cooking guide with timers and hands-free navigation"
+    },
+    {
+      "key": "SHOPPING_LIST",
+      "name": "Shopping List (Future)",
+      "description": "Ingredient aggregation, unit conversion, and recipe scaling"
+    }
+  ],
+  "sprints": [
+    {
+      "name": "Sprint 1 - Foundation",
+      "goal": "Project setup, design system foundation, and initial data layer",
+      "tasks": [
+        {"summary": "Initialize SvelteKit 2 project with TypeScript", "type": "Task", "points": 2, "epic": "PROJECT_SETUP"},
+        {"summary": "Configure @sveltejs/adapter-static for SSG", "type": "Task", "points": 2, "epic": "PROJECT_SETUP"},
+        {"summary": "Create project folder structure", "type": "Task", "points": 1, "epic": "PROJECT_SETUP"},
+        {"summary": "Install core dependencies (gray-matter, marked, fuse.js)", "type": "Task", "points": 1, "epic": "PROJECT_SETUP"},
+        {"summary": "Configure TypeScript strict mode and path aliases", "type": "Task", "points": 2, "epic": "PROJECT_SETUP"},
+        {"summary": "Set up ESLint and Prettier", "type": "Task", "points": 3, "epic": "PROJECT_SETUP"},
+        {"summary": "Create app.html with Google Fonts imports", "type": "Task", "points": 2, "epic": "PROJECT_SETUP"},
+        {"summary": "Set up base +layout.svelte with CSS design tokens", "type": "Task", "points": 5, "epic": "PROJECT_SETUP"},
+        {"summary": "Create tokens.css with The Pass design system", "type": "Task", "points": 3, "epic": "DESIGN_SYSTEM"},
+        {"summary": "Define TypeScript interfaces (Ingredient, RecipeMeta, Recipe)", "type": "Task", "points": 2, "epic": "DATA_LAYER"}
+      ]
+    },
+    {
+      "name": "Sprint 2 - Design System",
+      "goal": "Complete design system implementation with theme support and accessibility",
+      "tasks": [
+        {"summary": "Implement light/dark theme toggle with localStorage", "type": "Task", "points": 5, "epic": "DESIGN_SYSTEM"},
+        {"summary": "Create paper texture effect utility", "type": "Task", "points": 3, "epic": "DESIGN_SYSTEM"},
+        {"summary": "Build button and pill component styles", "type": "Task", "points": 5, "epic": "DESIGN_SYSTEM"},
+        {"summary": "Create typography utility classes", "type": "Task", "points": 3, "epic": "DESIGN_SYSTEM"},
+        {"summary": "Add page transition animations", "type": "Task", "points": 5, "epic": "DESIGN_SYSTEM"},
+        {"summary": "Implement focus states and accessibility features", "type": "Task", "points": 8, "epic": "DESIGN_SYSTEM"}
+      ]
+    },
+    {
+      "name": "Sprint 3 - Data Layer",
+      "goal": "Complete recipe loading, parsing, and search functionality",
+      "tasks": [
+        {"summary": "Create recipe loader utility with gray-matter", "type": "Task", "points": 3, "epic": "DATA_LAYER"},
+        {"summary": "Build markdown renderer with marked/mdsvex", "type": "Task", "points": 3, "epic": "DATA_LAYER"},
+        {"summary": "Implement getAllRecipes function for recipe index", "type": "Task", "points": 3, "epic": "DATA_LAYER"},
+        {"summary": "Create getRecipeBySlug function for single recipe", "type": "Task", "points": 2, "epic": "DATA_LAYER"},
+        {"summary": "Set up Fuse.js search configuration", "type": "Task", "points": 2, "epic": "DATA_LAYER"},
+        {"summary": "Build search utility with recipe-specific fields", "type": "Task", "points": 3, "epic": "DATA_LAYER"},
+        {"summary": "Create sample recipe files from existing markdown", "type": "Task", "points": 3, "epic": "DATA_LAYER"},
+        {"summary": "Add server load functions for routes", "type": "Task", "points": 3, "epic": "DATA_LAYER"}
+      ]
+    },
+    {
+      "name": "Sprint 4 - Home Page Components",
+      "goal": "Build all home page components and layout",
+      "tasks": [
+        {"summary": "Create Header.svelte with logo and theme toggle", "type": "Task", "points": 3, "epic": "HOME_PAGE"},
+        {"summary": "Build SearchBar.svelte with debounced input", "type": "Task", "points": 3, "epic": "HOME_PAGE"},
+        {"summary": "Create CategoryFilter.svelte with pill buttons", "type": "Task", "points": 2, "epic": "HOME_PAGE"},
+        {"summary": "Build RecipeCard.svelte component", "type": "Task", "points": 5, "epic": "HOME_PAGE"},
+        {"summary": "Create home page route +page.svelte", "type": "Task", "points": 5, "epic": "HOME_PAGE"},
+        {"summary": "Implement +page.server.ts for recipe index", "type": "Task", "points": 5, "epic": "HOME_PAGE"}
+      ]
+    },
+    {
+      "name": "Sprint 5 - Home Page Integration",
+      "goal": "Wire up search, filtering, animations, and responsive design",
+      "tasks": [
+        {"summary": "Wire up search functionality with Fuse.js", "type": "Task", "points": 3, "epic": "HOME_PAGE"},
+        {"summary": "Implement category filtering logic", "type": "Task", "points": 2, "epic": "HOME_PAGE"},
+        {"summary": "Add card hover animations (copper bar, shadow lift)", "type": "Task", "points": 3, "epic": "HOME_PAGE"},
+        {"summary": "Make home page responsive for mobile-first design", "type": "Task", "points": 3, "epic": "HOME_PAGE"},
+        {"summary": "Create recipe detail route structure [slug]", "type": "Task", "points": 3, "epic": "RECIPE_DETAIL"},
+        {"summary": "Build recipe detail server load function", "type": "Task", "points": 5, "epic": "RECIPE_DETAIL"}
+      ]
+    },
+    {
+      "name": "Sprint 6 - Recipe Detail Page",
+      "goal": "Build recipe detail components and layout",
+      "tasks": [
+        {"summary": "Create RecipeHeader.svelte (title, subtitle, back)", "type": "Task", "points": 3, "epic": "RECIPE_DETAIL"},
+        {"summary": "Build StatsBar.svelte with difficulty dots", "type": "Task", "points": 3, "epic": "RECIPE_DETAIL"},
+        {"summary": "Create Timeline.svelte component", "type": "Task", "points": 5, "epic": "RECIPE_DETAIL"},
+        {"summary": "Build IngredientGroup.svelte component", "type": "Task", "points": 3, "epic": "RECIPE_DETAIL"},
+        {"summary": "Create MethodStep.svelte with timeline border", "type": "Task", "points": 5, "epic": "RECIPE_DETAIL"},
+        {"summary": "Implement time marker parsing from markdown", "type": "Task", "points": 8, "epic": "RECIPE_DETAIL"}
+      ]
+    },
+    {
+      "name": "Sprint 7 - Recipe Detail Polish",
+      "goal": "Complete recipe detail page and error handling",
+      "tasks": [
+        {"summary": "Create Notes.svelte component", "type": "Task", "points": 2, "epic": "RECIPE_DETAIL"},
+        {"summary": "Handle 404 for missing recipes", "type": "Task", "points": 3, "epic": "RECIPE_DETAIL"},
+        {"summary": "Mobile viewport optimization", "type": "Task", "points": 3, "epic": "POLISH_PWA"},
+        {"summary": "Touch target sizing (minimum 44px)", "type": "Task", "points": 5, "epic": "POLISH_PWA"},
+        {"summary": "Font size adjustments for kitchen readability", "type": "Task", "points": 3, "epic": "POLISH_PWA"}
+      ]
+    },
+    {
+      "name": "Sprint 8 - PWA Implementation",
+      "goal": "Progressive Web App setup with offline support",
+      "tasks": [
+        {"summary": "Configure PWA manifest.json", "type": "Task", "points": 5, "epic": "POLISH_PWA"},
+        {"summary": "Implement service worker for offline caching", "type": "Task", "points": 8, "epic": "POLISH_PWA"},
+        {"summary": "Integrate Wake Lock API for screen awake", "type": "Task", "points": 5, "epic": "POLISH_PWA"}
+      ]
+    },
+    {
+      "name": "Sprint 9 - Quality & Performance",
+      "goal": "Performance optimization and accessibility audit",
+      "tasks": [
+        {"summary": "Performance audit and optimization", "type": "Task", "points": 8, "epic": "POLISH_PWA"},
+        {"summary": "Accessibility audit (WCAG 2.1 AA)", "type": "Task", "points": 8, "epic": "POLISH_PWA"}
+      ]
+    },
+    {
+      "name": "Sprint 10 - Cook Mode Foundation",
+      "goal": "Step-by-step cooking interface foundation",
+      "tasks": [
+        {"summary": "Create Cook Mode UI shell", "type": "Story", "points": 5, "epic": "COOK_MODE"},
+        {"summary": "Build step navigation component", "type": "Story", "points": 5, "epic": "COOK_MODE"},
+        {"summary": "Implement integrated timer system", "type": "Story", "points": 8, "epic": "COOK_MODE"},
+        {"summary": "Add timer notifications (audio/vibration)", "type": "Story", "points": 5, "epic": "COOK_MODE"}
+      ]
+    },
+    {
+      "name": "Sprint 11 - Shopping List",
+      "goal": "Ingredient aggregation and shopping list features",
+      "tasks": [
+        {"summary": "Build recipe selection for shopping list", "type": "Story", "points": 3, "epic": "SHOPPING_LIST"},
+        {"summary": "Create ingredient aggregation engine", "type": "Story", "points": 8, "epic": "SHOPPING_LIST"},
+        {"summary": "Build shopping list UI", "type": "Story", "points": 5, "epic": "SHOPPING_LIST"},
+        {"summary": "Implement unit conversion system", "type": "Story", "points": 8, "epic": "SHOPPING_LIST"},
+        {"summary": "Add recipe scaling logic", "type": "Story", "points": 5, "epic": "SHOPPING_LIST"}
+      ]
+    }
+  ]
+}
