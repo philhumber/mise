@@ -145,3 +145,25 @@ src/
 3. **Touch-friendly** - Large tap targets for wet/floury hands
 4. **Readable at arm's length** - Phone propped up, not in hand
 5. **Calm, not busy** - Restrained chrome, no visual noise
+
+## Project Management
+
+**JIRA Project:** [MISE Board](https://philhumber.atlassian.net/jira/software/projects/MISE/boards/34/backlog)
+
+### Sprint Planning (Complete)
+
+- **Sprints 1-9:** MVP (193 story points) - Core app with PWA support
+- **Sprints 10-11:** Future features (52 story points) - Cook Mode & Shopping List
+- **Total:** 61 tasks across 8 epics
+
+### Next Steps
+
+1. **Start Sprint 1** - Initialize SvelteKit project (MISE-14)
+2. **Manual JIRA cleanup** - Move issues to sprints 4, 5, 7, 9, 10 (hit API rate limit)
+3. **Delete `mise/` subfolder** - Artifact from early SvelteKit init attempt
+
+### Scripts
+
+- `scripts/jira.ps1` - JIRA CLI for issue management
+- `scripts/jira-batch-create.ps1` - Batch issue creation
+- `scripts/jira-tasks.json` - Complete task definitions
