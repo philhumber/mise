@@ -54,21 +54,21 @@ Each recipe is a markdown file in `content/recipes/` with this frontmatter struc
 ```yaml
 ---
 title: Recipe Title
-slug: recipe-title                     # URL-safe, matches filename
+slug: recipe-title # URL-safe, matches filename
 description: Brief description for cards/search
 
 # Categorisation
-category: main                         # starter, main, dessert, side, sauce, etc.
-cuisine: french                         # optional
+category: main # starter, main, dessert, side, sauce, etc.
+cuisine: french # optional
 tags: [sous-vide, make-ahead, dinner-party]
 
 # Timing (minutes)
 prepTime: 30
 cookTime: 45
-restTime: 10                           # optional
+restTime: 10 # optional
 
 serves: 4
-difficulty: intermediate               # easy, intermediate, advanced
+difficulty: intermediate # easy, intermediate, advanced
 
 # Structured ingredients for future features
 ingredients:
@@ -81,12 +81,11 @@ ingredients:
     unit: tbsp
 
 # Optional metadata
-source: original                       # or URL, cookbook name
-image: recipe-image.jpg               # relative to /static/images/recipes/
+source: original # or URL, cookbook name
+image: recipe-image.jpg # relative to /static/images/recipes/
 created: 2024-01-15
 updated: 2025-01-20
 ---
-
 # Recipe content in markdown below...
 ```
 
@@ -94,33 +93,33 @@ updated: 2025-01-20
 
 ```typescript
 interface Ingredient {
-  item: string;
-  quantity: number;
-  unit: string;
-  notes?: string;
+	item: string;
+	quantity: number;
+	unit: string;
+	notes?: string;
 }
 
 interface RecipeMeta {
-  title: string;
-  slug: string;
-  description: string;
-  category: string;
-  cuisine?: string;
-  tags: string[];
-  prepTime: number;
-  cookTime: number;
-  restTime?: number;
-  serves: number;
-  difficulty: 'easy' | 'intermediate' | 'advanced';
-  ingredients: Ingredient[];
-  source?: string;
-  image?: string;
-  created?: string;
-  updated?: string;
+	title: string;
+	slug: string;
+	description: string;
+	category: string;
+	cuisine?: string;
+	tags: string[];
+	prepTime: number;
+	cookTime: number;
+	restTime?: number;
+	serves: number;
+	difficulty: 'easy' | 'intermediate' | 'advanced';
+	ingredients: Ingredient[];
+	source?: string;
+	image?: string;
+	created?: string;
+	updated?: string;
 }
 
 interface Recipe extends RecipeMeta {
-  content: string;  // Rendered HTML from markdown body
+	content: string; // Rendered HTML from markdown body
 }
 ```
 

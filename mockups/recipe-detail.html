@@ -1,265 +1,362 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Kombu-Cured Low-Temp Cod - Mïse</title>
-  <link rel="stylesheet" href="styles.css">
-</head>
-<body>
-  <div class="app">
-    <!-- Header -->
-    <header class="header">
-      <a href="home.html" class="back-button">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <path d="m15 18-6-6 6-6"></path>
-        </svg>
-        Back
-      </a>
-      <button class="theme-toggle" id="themeToggle" aria-label="Toggle dark mode">
-        <span class="icon-sun">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <circle cx="12" cy="12" r="5"></circle>
-            <line x1="12" y1="1" x2="12" y2="3"></line>
-            <line x1="12" y1="21" x2="12" y2="23"></line>
-            <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
-            <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
-            <line x1="1" y1="12" x2="3" y2="12"></line>
-            <line x1="21" y1="12" x2="23" y2="12"></line>
-            <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
-            <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
-          </svg>
-        </span>
-        <span class="icon-moon">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
-          </svg>
-        </span>
-      </button>
-    </header>
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>Kombu-Cured Low-Temp Cod - Mïse</title>
+		<link rel="stylesheet" href="styles.css" />
+	</head>
+	<body>
+		<div class="app">
+			<!-- Header -->
+			<header class="header">
+				<a href="home.html" class="back-button">
+					<svg
+						viewBox="0 0 24 24"
+						fill="none"
+						stroke="currentColor"
+						stroke-width="2"
+						stroke-linecap="round"
+						stroke-linejoin="round"
+					>
+						<path d="m15 18-6-6 6-6"></path>
+					</svg>
+					Back
+				</a>
+				<button class="theme-toggle" id="themeToggle" aria-label="Toggle dark mode">
+					<span class="icon-sun">
+						<svg
+							width="18"
+							height="18"
+							viewBox="0 0 24 24"
+							fill="none"
+							stroke="currentColor"
+							stroke-width="2"
+							stroke-linecap="round"
+							stroke-linejoin="round"
+						>
+							<circle cx="12" cy="12" r="5"></circle>
+							<line x1="12" y1="1" x2="12" y2="3"></line>
+							<line x1="12" y1="21" x2="12" y2="23"></line>
+							<line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+							<line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+							<line x1="1" y1="12" x2="3" y2="12"></line>
+							<line x1="21" y1="12" x2="23" y2="12"></line>
+							<line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+							<line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+						</svg>
+					</span>
+					<span class="icon-moon">
+						<svg
+							width="18"
+							height="18"
+							viewBox="0 0 24 24"
+							fill="none"
+							stroke="currentColor"
+							stroke-width="2"
+							stroke-linecap="round"
+							stroke-linejoin="round"
+						>
+							<path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+						</svg>
+					</span>
+				</button>
+			</header>
 
-    <!-- Recipe Content -->
-    <main class="recipe-detail">
-      <!-- Title -->
-      <div class="recipe-header">
-        <h1 class="recipe-title">Kombu-Cured Low-Temp Cod</h1>
-        <p class="recipe-subtitle">Agar-Kombu Emulsion, Parsley Oil, Crispy Skin, Kombu Powder</p>
-      </div>
+			<!-- Recipe Content -->
+			<main class="recipe-detail">
+				<!-- Title -->
+				<div class="recipe-header">
+					<h1 class="recipe-title">Kombu-Cured Low-Temp Cod</h1>
+					<p class="recipe-subtitle">Agar-Kombu Emulsion, Parsley Oil, Crispy Skin, Kombu Powder</p>
+				</div>
 
-      <!-- Stats Bar -->
-      <div class="stats-bar">
-        <div class="stat">
-          <span class="stat__value">35 min</span>
-          <span class="stat__label">Active</span>
-        </div>
-        <div class="stat">
-          <span class="stat__value">2</span>
-          <span class="stat__label">Serves</span>
-        </div>
-        <div class="stat">
-          <div class="difficulty-dots">
-            <span class="difficulty-dot filled"></span>
-            <span class="difficulty-dot filled"></span>
-            <span class="difficulty-dot filled"></span>
-            <span class="difficulty-dot"></span>
-            <span class="difficulty-dot"></span>
-          </div>
-          <span class="stat__label">Advanced</span>
-        </div>
-      </div>
+				<!-- Stats Bar -->
+				<div class="stats-bar">
+					<div class="stat">
+						<span class="stat__value">35 min</span>
+						<span class="stat__label">Active</span>
+					</div>
+					<div class="stat">
+						<span class="stat__value">2</span>
+						<span class="stat__label">Serves</span>
+					</div>
+					<div class="stat">
+						<div class="difficulty-dots">
+							<span class="difficulty-dot filled"></span>
+							<span class="difficulty-dot filled"></span>
+							<span class="difficulty-dot filled"></span>
+							<span class="difficulty-dot"></span>
+							<span class="difficulty-dot"></span>
+						</div>
+						<span class="stat__label">Advanced</span>
+					</div>
+				</div>
 
-      <!-- Timeline Summary -->
-      <h2 class="section-header">Timeline</h2>
-      <div class="timeline-summary">
-        <div class="timeline-item">
-          <span class="timeline-marker">T-48h</span>
-          <span class="timeline-text">Start kombu water infusion</span>
-        </div>
-        <div class="timeline-item">
-          <span class="timeline-marker">T-24h</span>
-          <span class="timeline-text">Skin cod, cure in kombu wrap, prep parsley oil, make kombu powder</span>
-        </div>
-        <div class="timeline-item">
-          <span class="timeline-marker">Day of</span>
-          <span class="timeline-text">Sous vide cod, fry skin, set agar gel</span>
-        </div>
-        <div class="timeline-item">
-          <span class="timeline-marker">Service</span>
-          <span class="timeline-text">Blend emulsion, reheat cod, plate</span>
-        </div>
-      </div>
+				<!-- Timeline Summary -->
+				<h2 class="section-header">Timeline</h2>
+				<div class="timeline-summary">
+					<div class="timeline-item">
+						<span class="timeline-marker">T-48h</span>
+						<span class="timeline-text">Start kombu water infusion</span>
+					</div>
+					<div class="timeline-item">
+						<span class="timeline-marker">T-24h</span>
+						<span class="timeline-text"
+							>Skin cod, cure in kombu wrap, prep parsley oil, make kombu powder</span
+						>
+					</div>
+					<div class="timeline-item">
+						<span class="timeline-marker">Day of</span>
+						<span class="timeline-text">Sous vide cod, fry skin, set agar gel</span>
+					</div>
+					<div class="timeline-item">
+						<span class="timeline-marker">Service</span>
+						<span class="timeline-text">Blend emulsion, reheat cod, plate</span>
+					</div>
+				</div>
 
-      <!-- Ingredients -->
-      <h2 class="section-header">Ingredients</h2>
+				<!-- Ingredients -->
+				<h2 class="section-header">Ingredients</h2>
 
-      <div class="ingredient-group">
-        <h3 class="ingredient-group__title">Cod</h3>
-        <ul class="ingredient-list">
-          <li>2 fresh cod loin portions, skin on (230g each)</li>
-          <li>6g fine sea salt (1.5% of skinned weight)</li>
-          <li>0.8g sugar (0.2% of skinned weight)</li>
-          <li>2 dried kombu sheets, large enough to wrap portions</li>
-          <li>30ml neutral oil (for sous vide bags)</li>
-        </ul>
-      </div>
+				<div class="ingredient-group">
+					<h3 class="ingredient-group__title">Cod</h3>
+					<ul class="ingredient-list">
+						<li>2 fresh cod loin portions, skin on (230g each)</li>
+						<li>6g fine sea salt (1.5% of skinned weight)</li>
+						<li>0.8g sugar (0.2% of skinned weight)</li>
+						<li>2 dried kombu sheets, large enough to wrap portions</li>
+						<li>30ml neutral oil (for sous vide bags)</li>
+					</ul>
+				</div>
 
-      <div class="ingredient-group">
-        <h3 class="ingredient-group__title">Kombu Water</h3>
-        <ul class="ingredient-list">
-          <li>300ml cold water</li>
-          <li>10 x 10cm piece ma-kombu or rishiri-kombu</li>
-        </ul>
-      </div>
+				<div class="ingredient-group">
+					<h3 class="ingredient-group__title">Kombu Water</h3>
+					<ul class="ingredient-list">
+						<li>300ml cold water</li>
+						<li>10 x 10cm piece ma-kombu or rishiri-kombu</li>
+					</ul>
+				</div>
 
-      <div class="ingredient-group">
-        <h3 class="ingredient-group__title">Agar-Kombu Emulsion</h3>
-        <ul class="ingredient-list">
-          <li>150ml kombu water</li>
-          <li>1.2-1.5g agar powder (0.8-1%)</li>
-          <li>80-100ml mild olive oil</li>
-          <li>Fine sea salt</li>
-          <li>Lemon juice, a few drops</li>
-          <li>1 small garlic clove (optional)</li>
-        </ul>
-      </div>
+				<div class="ingredient-group">
+					<h3 class="ingredient-group__title">Agar-Kombu Emulsion</h3>
+					<ul class="ingredient-list">
+						<li>150ml kombu water</li>
+						<li>1.2-1.5g agar powder (0.8-1%)</li>
+						<li>80-100ml mild olive oil</li>
+						<li>Fine sea salt</li>
+						<li>Lemon juice, a few drops</li>
+						<li>1 small garlic clove (optional)</li>
+					</ul>
+				</div>
 
-      <div class="ingredient-group">
-        <h3 class="ingredient-group__title">Parsley Oil</h3>
-        <ul class="ingredient-list">
-          <li>30g flat-leaf parsley leaves, stems removed</li>
-          <li>80g neutral oil</li>
-        </ul>
-      </div>
+				<div class="ingredient-group">
+					<h3 class="ingredient-group__title">Parsley Oil</h3>
+					<ul class="ingredient-list">
+						<li>30g flat-leaf parsley leaves, stems removed</li>
+						<li>80g neutral oil</li>
+					</ul>
+				</div>
 
-      <div class="ingredient-group">
-        <h3 class="ingredient-group__title">Finishing</h3>
-        <ul class="ingredient-list">
-          <li>Reserved cod skin</li>
-          <li>Neutral oil for frying</li>
-          <li>5 x 5cm piece dried kombu (for powder)</li>
-        </ul>
-      </div>
+				<div class="ingredient-group">
+					<h3 class="ingredient-group__title">Finishing</h3>
+					<ul class="ingredient-list">
+						<li>Reserved cod skin</li>
+						<li>Neutral oil for frying</li>
+						<li>5 x 5cm piece dried kombu (for powder)</li>
+					</ul>
+				</div>
 
-      <!-- Method -->
-      <h2 class="section-header">Method</h2>
+				<!-- Method -->
+				<h2 class="section-header">Method</h2>
 
-      <p class="time-marker">T-48 Hours</p>
+				<p class="time-marker">T-48 Hours</p>
 
-      <div class="method-step">
-        <p class="method-step__number">1. Start Kombu Water</p>
-        <p class="method-step__text">Submerge the 10 x 10cm kombu in 300ml cold water. Cover and refrigerate. This infuses for up to 48 hours - longer is fine.</p>
-      </div>
+				<div class="method-step">
+					<p class="method-step__number">1. Start Kombu Water</p>
+					<p class="method-step__text">
+						Submerge the 10 x 10cm kombu in 300ml cold water. Cover and refrigerate. This infuses
+						for up to 48 hours - longer is fine.
+					</p>
+				</div>
 
-      <p class="time-marker">T-24 Hours</p>
+				<p class="time-marker">T-24 Hours</p>
 
-      <div class="method-step">
-        <p class="method-step__number">2. Skin the Cod</p>
-        <p class="method-step__text">Remove skin carefully in one piece per fillet, keeping it intact. Reserve skin for crisping. You should have approximately 200g skinned flesh per portion.</p>
-      </div>
+				<div class="method-step">
+					<p class="method-step__number">2. Skin the Cod</p>
+					<p class="method-step__text">
+						Remove skin carefully in one piece per fillet, keeping it intact. Reserve skin for
+						crisping. You should have approximately 200g skinned flesh per portion.
+					</p>
+				</div>
 
-      <div class="method-step">
-        <p class="method-step__number">3. Prepare Kombu Sheets</p>
-        <p class="method-step__text">Lay both kombu sheets between damp (not wet) kitchen towels. Leave 20-30 minutes until pliable. Do not wipe off the white surface bloom.</p>
-      </div>
+				<div class="method-step">
+					<p class="method-step__number">3. Prepare Kombu Sheets</p>
+					<p class="method-step__text">
+						Lay both kombu sheets between damp (not wet) kitchen towels. Leave 20-30 minutes until
+						pliable. Do not wipe off the white surface bloom.
+					</p>
+				</div>
 
-      <div class="method-step">
-        <p class="method-step__number">4. Cure the Cod</p>
-        <p class="method-step__text">Mix 6g salt and 0.8g sugar. Distribute evenly over all flesh surfaces of both portions. Place each portion on a softened kombu sheet and wrap fully, folding edges underneath. Place seam-side down on a tray lined with fresh damp kombu or parchment. Refrigerate uncovered. Cure time: 40-45 minutes.</p>
-      </div>
+				<div class="method-step">
+					<p class="method-step__number">4. Cure the Cod</p>
+					<p class="method-step__text">
+						Mix 6g salt and 0.8g sugar. Distribute evenly over all flesh surfaces of both portions.
+						Place each portion on a softened kombu sheet and wrap fully, folding edges underneath.
+						Place seam-side down on a tray lined with fresh damp kombu or parchment. Refrigerate
+						uncovered. Cure time: 40-45 minutes.
+					</p>
+				</div>
 
-      <div class="method-step">
-        <p class="method-step__number">5. Rinse and Dry</p>
-        <p class="method-step__text">Unwrap cod, discard kombu. Rinse briefly under cold water. Pat surface lightly - leave slightly tacky rather than bone dry. Place on a wire rack set over a tray. Refrigerate uncovered overnight to dry the surface.</p>
-      </div>
+				<div class="method-step">
+					<p class="method-step__number">5. Rinse and Dry</p>
+					<p class="method-step__text">
+						Unwrap cod, discard kombu. Rinse briefly under cold water. Pat surface lightly - leave
+						slightly tacky rather than bone dry. Place on a wire rack set over a tray. Refrigerate
+						uncovered overnight to dry the surface.
+					</p>
+				</div>
 
-      <div class="method-step">
-        <p class="method-step__number">6. Prepare Cod Skin</p>
-        <p class="method-step__text">Scrape skin thoroughly with the back of a knife to remove residual scales and moisture. Rinse, pat dry. Press flat between parchment sheets weighted with a sheet pan. Refrigerate uncovered overnight to dry, or dehydrate at 55C for 2-3 hours until leathery but not brittle.</p>
-      </div>
+				<div class="method-step">
+					<p class="method-step__number">6. Prepare Cod Skin</p>
+					<p class="method-step__text">
+						Scrape skin thoroughly with the back of a knife to remove residual scales and moisture.
+						Rinse, pat dry. Press flat between parchment sheets weighted with a sheet pan.
+						Refrigerate uncovered overnight to dry, or dehydrate at 55C for 2-3 hours until leathery
+						but not brittle.
+					</p>
+				</div>
 
-      <div class="method-step">
-        <p class="method-step__number">7. Make Parsley Oil</p>
-        <p class="method-step__text">Blanch parsley leaves in well-salted boiling water for 10 seconds. Transfer immediately to ice water. Drain, then squeeze firmly in a clean towel until no moisture remains. Blend with 80g neutral oil for 1-2 minutes. Strain through a fine sieve, then through a coffee filter. Refrigerate in a small jar.</p>
-      </div>
+				<div class="method-step">
+					<p class="method-step__number">7. Make Parsley Oil</p>
+					<p class="method-step__text">
+						Blanch parsley leaves in well-salted boiling water for 10 seconds. Transfer immediately
+						to ice water. Drain, then squeeze firmly in a clean towel until no moisture remains.
+						Blend with 80g neutral oil for 1-2 minutes. Strain through a fine sieve, then through a
+						coffee filter. Refrigerate in a small jar.
+					</p>
+				</div>
 
-      <div class="method-step">
-        <p class="method-step__number">8. Make Kombu Powder</p>
-        <p class="method-step__text">Toast a 5 x 5cm piece of dried kombu in a dry pan over medium heat, moving constantly, until brittle and slightly darkened at edges - about 2 minutes. Cool completely. Grind to fine powder in spice grinder. Store airtight at room temperature.</p>
-      </div>
+				<div class="method-step">
+					<p class="method-step__number">8. Make Kombu Powder</p>
+					<p class="method-step__text">
+						Toast a 5 x 5cm piece of dried kombu in a dry pan over medium heat, moving constantly,
+						until brittle and slightly darkened at edges - about 2 minutes. Cool completely. Grind
+						to fine powder in spice grinder. Store airtight at room temperature.
+					</p>
+				</div>
 
-      <p class="time-marker">Day Of (Morning)</p>
+				<p class="time-marker">Day Of (Morning)</p>
 
-      <div class="method-step">
-        <p class="method-step__number">9. Portion and Bag Cod</p>
-        <p class="method-step__text">Portion cod if needed (yours are already individual). Place each portion in a vacuum bag with 15ml neutral oil. Seal on low compression. Refrigerate until cooking.</p>
-      </div>
+				<div class="method-step">
+					<p class="method-step__number">9. Portion and Bag Cod</p>
+					<p class="method-step__text">
+						Portion cod if needed (yours are already individual). Place each portion in a vacuum bag
+						with 15ml neutral oil. Seal on low compression. Refrigerate until cooking.
+					</p>
+				</div>
 
-      <div class="method-step">
-        <p class="method-step__number">10. Cook Cod</p>
-        <p class="method-step__text">Water bath at 48-49C. Cook until 47C core - approximately 35-45 minutes depending on thickness. Transfer bags directly to ice bath for 10 minutes. Return to refrigerator.</p>
-      </div>
+				<div class="method-step">
+					<p class="method-step__number">10. Cook Cod</p>
+					<p class="method-step__text">
+						Water bath at 48-49C. Cook until 47C core - approximately 35-45 minutes depending on
+						thickness. Transfer bags directly to ice bath for 10 minutes. Return to refrigerator.
+					</p>
+				</div>
 
-      <div class="method-step">
-        <p class="method-step__number">11. Fry Cod Skin</p>
-        <p class="method-step__text">Heat neutral oil to 185-190C. Fry dried skin until fully glassy, rigid, and no longer bubbling - approximately 45-60 seconds. Drain on kitchen paper. Season lightly with fine salt while warm. Cool completely, then store airtight at room temperature. Break into smaller shards before service.</p>
-      </div>
+				<div class="method-step">
+					<p class="method-step__number">11. Fry Cod Skin</p>
+					<p class="method-step__text">
+						Heat neutral oil to 185-190C. Fry dried skin until fully glassy, rigid, and no longer
+						bubbling - approximately 45-60 seconds. Drain on kitchen paper. Season lightly with fine
+						salt while warm. Cool completely, then store airtight at room temperature. Break into
+						smaller shards before service.
+					</p>
+				</div>
 
-      <div class="method-step">
-        <p class="method-step__number">12. Set Agar Gel</p>
-        <p class="method-step__text">Remove kombu from infused water. Measure 150ml kombu water into a small saucepan. Whisk in 1.2-1.5g agar powder. Bring to a simmer, whisking, and hold at a simmer for 1-2 minutes to fully hydrate agar. Pour into a shallow container. Refrigerate until firmly set - about 1 hour.</p>
-      </div>
+				<div class="method-step">
+					<p class="method-step__number">12. Set Agar Gel</p>
+					<p class="method-step__text">
+						Remove kombu from infused water. Measure 150ml kombu water into a small saucepan. Whisk
+						in 1.2-1.5g agar powder. Bring to a simmer, whisking, and hold at a simmer for 1-2
+						minutes to fully hydrate agar. Pour into a shallow container. Refrigerate until firmly
+						set - about 1 hour.
+					</p>
+				</div>
 
-      <p class="time-marker">Service</p>
+				<p class="time-marker">Service</p>
 
-      <div class="method-step">
-        <p class="method-step__number">13. Blend Emulsion</p>
-        <p class="method-step__text">Cut agar gel into rough cubes. Transfer to a tall container or blender jug. Blend until completely smooth. With blender running on medium, drizzle in 80-100ml olive oil in a thin steady stream. The emulsion should become pale, glossy, and pourable with body - similar to a loose veloute. Season with fine salt and a few drops of lemon. Keep warm in a small pan over very low heat, stirring occasionally.</p>
-      </div>
+				<div class="method-step">
+					<p class="method-step__number">13. Blend Emulsion</p>
+					<p class="method-step__text">
+						Cut agar gel into rough cubes. Transfer to a tall container or blender jug. Blend until
+						completely smooth. With blender running on medium, drizzle in 80-100ml olive oil in a
+						thin steady stream. The emulsion should become pale, glossy, and pourable with body -
+						similar to a loose veloute. Season with fine salt and a few drops of lemon. Keep warm in
+						a small pan over very low heat, stirring occasionally.
+					</p>
+				</div>
 
-      <div class="method-step">
-        <p class="method-step__number">14. Reheat Cod</p>
-        <p class="method-step__text">Water bath at 45-46C. Warm bagged cod to 44C core - approximately 15-20 minutes. Hold in bath up to 30 minutes.</p>
-      </div>
+				<div class="method-step">
+					<p class="method-step__number">14. Reheat Cod</p>
+					<p class="method-step__text">
+						Water bath at 45-46C. Warm bagged cod to 44C core - approximately 15-20 minutes. Hold in
+						bath up to 30 minutes.
+					</p>
+				</div>
 
-      <div class="method-step">
-        <p class="method-step__number">15. Temper Parsley Oil</p>
-        <p class="method-step__text">Remove parsley oil from refrigerator 20 minutes before plating. Target 25-30C - slightly cool but fluid.</p>
-      </div>
+				<div class="method-step">
+					<p class="method-step__number">15. Temper Parsley Oil</p>
+					<p class="method-step__text">
+						Remove parsley oil from refrigerator 20 minutes before plating. Target 25-30C - slightly
+						cool but fluid.
+					</p>
+				</div>
 
-      <div class="method-step">
-        <p class="method-step__number">16. Plate</p>
-        <p class="method-step__text">Warm two plates. Spoon a pool of emulsion onto each plate - enough to generously bed the fish but not flood the plate. Remove cod from bag, pat dry gently with kitchen paper. Place cod onto emulsion. Dot parsley oil around the sauce edge in five or six drops per plate. Drag one or two dots gently with a spoon tip to create movement. Arrange crispy skin shards - three or four per plate - angled against the fish. Finish with a small pinch of kombu powder directly on the cod.</p>
-      </div>
+				<div class="method-step">
+					<p class="method-step__number">16. Plate</p>
+					<p class="method-step__text">
+						Warm two plates. Spoon a pool of emulsion onto each plate - enough to generously bed the
+						fish but not flood the plate. Remove cod from bag, pat dry gently with kitchen paper.
+						Place cod onto emulsion. Dot parsley oil around the sauce edge in five or six drops per
+						plate. Drag one or two dots gently with a spoon tip to create movement. Arrange crispy
+						skin shards - three or four per plate - angled against the fish. Finish with a small
+						pinch of kombu powder directly on the cod.
+					</p>
+				</div>
 
-      <div class="notes">
-        <p>Blending the emulsion (2 minutes), reheating cod in the bath (hands-off), plating (2 minutes per plate). Everything else is done. Enjoy your guests.</p>
-      </div>
-    </main>
-  </div>
+				<div class="notes">
+					<p>
+						Blending the emulsion (2 minutes), reheating cod in the bath (hands-off), plating (2
+						minutes per plate). Everything else is done. Enjoy your guests.
+					</p>
+				</div>
+			</main>
+		</div>
 
-  <script>
-    // Theme Toggle
-    const themeToggle = document.getElementById('themeToggle');
-    const html = document.documentElement;
+		<script>
+			// Theme Toggle
+			const themeToggle = document.getElementById('themeToggle');
+			const html = document.documentElement;
 
-    // Check for saved theme preference
-    const savedTheme = localStorage.getItem('mise-theme');
-    if (savedTheme === 'dark') {
-      html.setAttribute('data-theme', 'dark');
-    }
+			// Check for saved theme preference
+			const savedTheme = localStorage.getItem('mise-theme');
+			if (savedTheme === 'dark') {
+				html.setAttribute('data-theme', 'dark');
+			}
 
-    themeToggle.addEventListener('click', () => {
-      const currentTheme = html.getAttribute('data-theme');
-      const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+			themeToggle.addEventListener('click', () => {
+				const currentTheme = html.getAttribute('data-theme');
+				const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
 
-      if (newTheme === 'light') {
-        html.removeAttribute('data-theme');
-      } else {
-        html.setAttribute('data-theme', 'dark');
-      }
+				if (newTheme === 'light') {
+					html.removeAttribute('data-theme');
+				} else {
+					html.setAttribute('data-theme', 'dark');
+				}
 
-      localStorage.setItem('mise-theme', newTheme);
-    });
-  </script>
-</body>
+				localStorage.setItem('mise-theme', newTheme);
+			});
+		</script>
+	</body>
 </html>
