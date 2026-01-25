@@ -52,5 +52,8 @@
 	.main {
 		flex: 1;
 		padding: var(--spacing-xl);
+		padding-left: max(var(--spacing-xl), env(safe-area-inset-left));
+		padding-right: max(var(--spacing-xl), env(safe-area-inset-right));
+		padding-bottom: max(var(--spacing-xl), env(safe-area-inset-bottom));
 	}
 </style>

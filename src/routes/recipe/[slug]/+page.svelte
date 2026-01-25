@@ -107,7 +107,9 @@
 	.back-link {
 		display: inline-flex;
 		align-items: center;
+		min-height: 44px;
 		gap: var(--spacing-xs);
+		padding: var(--spacing-sm) 0;
 		font-family: var(--font-body);
 		font-size: var(--font-size-body);
 		color: var(--color-text-secondary);
