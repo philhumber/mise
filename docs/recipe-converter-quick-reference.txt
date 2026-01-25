@@ -1,0 +1,55 @@
+MISE RECIPE CONVERTER - QUICK REFERENCE
+========================================
+
+COPY THIS PROMPT TO CLAUDE:
+---------------------------
+
+Convert this recipe into a valid Mïse app markdown file.
+
+REQUIRED FRONTMATTER:
+---
+title: 'Recipe Name'
+subtitle: 'Optional'
+category: main|starter|dessert|side|drink|sauce
+difficulty: easy|intermediate|advanced
+active_time: '30 min'
+total_time: '2h'
+serves: 4
+tags: [tag1, tag2, tag3]
+---
+
+TIMELINE MARKERS (for multi-day recipes):
+T-48h, T-24h, T-12h, T-4h, T-1h, Day-of, Service
+
+STRUCTURE:
+## Timeline (optional - multi-day only)
+- **T-24h** Brief description
+- **Day-of** Brief description
+
+## Ingredients
+### Component Name (if multiple)
+- Quantity ingredient
+
+## Method
+### T-24h (if using timeline)
+1. **Step Title.** Instructions...
+
+## Notes (optional)
+Tips and variations
+
+VERIFICATION:
+✓ serves is integer (not "4 servings", just 4)
+✓ category/difficulty match exact enums
+✓ Timeline markers bolded: **T-24h**
+✓ Method steps numbered, titles bolded
+✓ Timeline markers match exactly between sections
+
+[PASTE YOUR RECIPE HERE]
+
+---------------------------
+
+AFTER CONVERSION:
+1. Save output to content/recipes/[slug].md
+2. Run: npm run build
+3. Build will fail with specific errors if invalid
+4. Fix any validation errors and rebuild
