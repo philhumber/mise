@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { resolveRoute } from '$app/paths';
+	import { base } from '$app/paths';
 	import { toggleTheme, getTheme } from '$lib/stores/theme';
 
 	let isDark = $state(getTheme() === 'dark');
@@ -11,8 +11,8 @@
 </script>
 
 <header class="header">
-	<!-- eslint-disable-next-line svelte/no-navigation-without-resolve -->
-	<a href={resolveRoute('/', {})} class="logo text-logo">mïse</a>
+	<!-- eslint-disable-next-line svelte/no-navigation-without-resolve -- using base for non-parameterized route -->
+	<a href={base || '/'} class="logo text-logo">mïse</a>
 
 	<button
 		class="theme-toggle"

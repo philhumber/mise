@@ -1,51 +1,15 @@
 <script lang="ts">
 	import RecipeCard from '$lib/components/RecipeCard.svelte';
-	import type { RecipeMeta } from '$lib/types';
 
-	// Mock data for visual demo
-	const mockRecipes: RecipeMeta[] = [
-		{
-			slug: 'kombu-cod',
-			title: 'Kombu-Cured Low-Temp Cod',
-			subtitle: 'Agar-Kombu Emulsion, Parsley Oil, Crispy Skin',
-			category: 'main',
-			difficulty: 'advanced',
-			active_time: '35 min',
-			total_time: '48h',
-			serves: 2,
-			tags: ['seafood', 'sous-vide', 'make-ahead']
-		},
-		{
-			slug: 'yuzu-granite',
-			title: 'Yuzu Green Tea Granité',
-			subtitle: 'Matcha Cream, Candied Ginger',
-			category: 'dessert',
-			difficulty: 'easy',
-			active_time: '15 min',
-			total_time: '4h',
-			serves: 4,
-			tags: ['frozen', 'make-ahead', 'refreshing']
-		},
-		{
-			slug: 'kitchen-hydration',
-			title: 'Kitchen Hydration Drink',
-			subtitle: 'Electrolyte Replacement for Long Service',
-			category: 'drink',
-			difficulty: 'easy',
-			active_time: '5 min',
-			total_time: '5 min',
-			serves: 1,
-			tags: ['quick', 'essential', 'hydration']
-		}
-	];
+	let { data } = $props();
 
 	const categories = ['all', 'main', 'starter', 'dessert', 'side', 'drink', 'sauce'];
 	let activeCategory = $state('all');
 
 	const filteredRecipes = $derived(
 		activeCategory === 'all'
-			? mockRecipes
-			: mockRecipes.filter((r) => r.category === activeCategory)
+			? data.recipes
+			: data.recipes.filter((r) => r.category === activeCategory)
 	);
 </script>
 

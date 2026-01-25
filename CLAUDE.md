@@ -169,12 +169,18 @@ src/
 3. **MISE-40** - Create CategoryFilter.svelte with pill buttons
 4. **MISE-41** - Build RecipeCard.svelte component
 
-### Completed This Session
+### Completed
 
 - **MISE-30, 31, 32, 33** - Recipe data layer (`src/lib/utils/recipes.ts`)
   - `getAllRecipes()` - Returns RecipeMeta[] for listing pages
   - `getRecipeBySlug(slug)` - Returns full Recipe with rendered HTML
   - Validates frontmatter at build time, throws typed errors
+
+- **MISE-34, 35, 36, 37** - Search, content, and server load functions
+  - `searchRecipes()` - Fuse.js fuzzy search utility (`src/lib/utils/search.ts`)
+  - 3 sample recipes in `content/recipes/` (kombu-cod, yuzu-granite, kitchen-hydration)
+  - Server load functions for home and recipe detail pages
+  - Recipe format documentation (`docs/recipe-format.md`)
 
 ### Scripts
 
