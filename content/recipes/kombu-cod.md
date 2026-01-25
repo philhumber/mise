@@ -13,7 +13,7 @@ tags: [seafood, sous-vide, make-ahead]
 
 - **T-48h** Start kombu water infusion
 - **T-24h** Skin cod, cure in kombu wrap, prep parsley oil, make kombu powder
-- **Day of** Sous vide cod, fry skin, set agar gel
+- **Day-of** Sous vide cod, fry skin, set agar gel
 - **Service** Blend emulsion, reheat cod, plate
 
 ## Ingredients
@@ -53,11 +53,11 @@ tags: [seafood, sous-vide, make-ahead]
 
 ## Method
 
-### T-48 Hours
+### T-48h
 
 1. **Start Kombu Water.** Submerge the 10 x 10cm kombu in 300ml cold water. Cover and refrigerate. This infuses for up to 48 hours - longer is fine.
 
-### T-24 Hours
+### T-24h
 
 2. **Skin the Cod.** Remove skin carefully in one piece per fillet, keeping it intact. Reserve skin for crisping. You should have approximately 200g skinned flesh per portion.
 
@@ -73,7 +73,7 @@ tags: [seafood, sous-vide, make-ahead]
 
 8. **Make Kombu Powder.** Toast a 5 x 5cm piece of dried kombu in a dry pan over medium heat, moving constantly, until brittle and slightly darkened at edges - about 2 minutes. Cool completely. Grind to fine powder in spice grinder. Store airtight at room temperature.
 
-### Day Of (Morning)
+### Day-of
 
 9. **Portion and Bag Cod.** Portion cod if needed (yours are already individual). Place each portion in a vacuum bag with 15ml neutral oil. Seal on low compression. Refrigerate until cooking.
 

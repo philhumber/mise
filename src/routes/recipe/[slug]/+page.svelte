@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { base } from '$app/paths';
+	import Timeline from '$lib/components/Timeline.svelte';
 
 	let { data } = $props();
 
@@ -65,16 +66,38 @@
 		{/each}
 	</div>
 
-	<article class="recipe-content">
-		<!-- eslint-disable-next-line svelte/no-at-html-tags -- trusted content from repo markdown files, see docs/recipe-format.md for sanitization notes -->
-		{@html data.recipe.content}
-	</article>
+	<div class="recipe-layout">
+		<Timeline content={data.recipe.content} />
+
+		<article class="recipe-content">
+			<!-- eslint-disable-next-line svelte/no-at-html-tags -- trusted content from repo markdown files, see docs/recipe-format.md for sanitization notes -->
+			{@html data.recipe.content}
+		</article>
+	</div>
 </div>
 
 <style>
 	.recipe-detail {
 		max-width: 800px;
 		margin: 0 auto;
+	}
+
+	@media (min-width: 768px) {
+		.recipe-detail {
+			max-width: 1060px; /* 220px sidebar + 40px gap + 800px content */
+		}
+	}
+
+	/* Smooth scroll for anchor links with offset for visual breathing room */
+	:global(html) {
+		scroll-behavior: smooth;
+		scroll-padding-top: var(--spacing-2xl);
+	}
+
+	@media (prefers-reduced-motion: reduce) {
+		:global(html) {
+			scroll-behavior: auto;
+		}
 	}
 
 	.recipe-header {
@@ -165,12 +188,32 @@
 		display: flex;
 		flex-wrap: wrap;
 		gap: var(--spacing-sm);
-		margin-bottom: var(--spacing-3xl);
+		margin-bottom: var(--spacing-2xl);
+	}
+
+	/* Recipe layout - grid on desktop for timeline sidebar */
+	.recipe-layout {
+		display: grid;
+		gap: var(--spacing-2xl);
+	}
+
+	/* Only apply two-column layout when desktop timeline is present */
+	@media (min-width: 768px) {
+		.recipe-layout:has(:global(.timeline-desktop)) {
+			grid-template-columns: 220px 1fr;
+			gap: var(--spacing-3xl);
+		}
 	}
 
 	/* Recipe content markdown styling */
 	.recipe-content {
 		line-height: 1.7;
+		min-width: 0; /* Prevent grid blowout */
+	}
+
+	/* Only add over-scroll padding when timeline navigation exists */
+	.recipe-layout:has(:global(.timeline-desktop)) .recipe-content {
+		padding-bottom: 70vh;
 	}
 
 	.recipe-content :global(h2) {

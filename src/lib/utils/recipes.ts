@@ -7,9 +7,11 @@
 
 import matter from 'gray-matter';
 import { marked } from 'marked';
+import { gfmHeadingId } from 'marked-gfm-heading-id';
 import type { Recipe, RecipeMeta, RecipeCategory, Difficulty } from '$lib/types';
 
-// Configure marked for GitHub Flavored Markdown
+// Configure marked for GitHub Flavored Markdown with heading IDs
+marked.use(gfmHeadingId());
 marked.setOptions({
 	gfm: true,
 	breaks: false
@@ -169,7 +171,7 @@ function getSlugFromPath(path: string): string {
  * Load all recipe files at build time using Vite's import.meta.glob
  * The ?raw query imports files as raw text strings
  */
-const recipeFiles = import.meta.glob<string>('../../content/recipes/*.md', {
+const recipeFiles = import.meta.glob<string>('../../../content/recipes/*.md', {
 	eager: true,
 	query: '?raw',
 	import: 'default'

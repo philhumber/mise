@@ -78,22 +78,37 @@ Tips, variations, or storage instructions.
 
 ### Timeline Markers
 
-For multi-component recipes with advance prep, use timeline markers:
+For multi-component recipes with advance prep, use timeline markers. **Important:** Markers must match exactly between the Timeline section and Method headings for navigation to work.
+
+#### Canonical Markers
+
+| Marker    | Use Case                | Generated Anchor ID |
+| --------- | ----------------------- | ------------------- |
+| `T-48h`   | 48 hours before service | `t-48h`             |
+| `T-24h`   | 24 hours before service | `t-24h`             |
+| `T-12h`   | 12 hours before service | `t-12h`             |
+| `T-4h`    | 4 hours before service  | `t-4h`              |
+| `T-1h`    | 1 hour before service   | `t-1h`              |
+| `Day-of`  | Morning of service      | `day-of`            |
+| `Service` | Final plating steps     | `service`           |
+
+#### Timeline Section Format
 
 ```markdown
 ## Timeline
 
 - **T-48h** Start kombu water infusion
 - **T-24h** Cure fish, make parsley oil
-- **Day of** Cook and assemble
+- **Day-of** Cook and assemble
 - **Service** Final plating
 ```
 
-Timeline format conventions:
+**Rules:**
 
-- `T-Xh` or `T-Xd` - Countdown format (hours or days before service)
-- `Day of` or `Day of (Morning)` - Same-day prep
-- `Service` - Final steps at plating time
+- Use exact markers from the canonical list above
+- Bold the marker: `**T-48h**`
+- Follow with a brief description
+- Markers become clickable links to Method sections
 
 ### Ingredient Groups
 
@@ -115,21 +130,32 @@ Group ingredients by component for complex recipes:
 
 ### Method Steps
 
-Number steps and use bold for step titles:
+Organize method steps under timeline headings. **Headings must use exact canonical markers** to enable timeline navigation.
 
 ```markdown
 ## Method
 
-### T-24 Hours
+### T-24h
 
 1. **Cure the Cod.** Mix salt and sugar. Distribute over fish...
 
 2. **Prepare Kombu Sheets.** Lay sheets between damp towels...
 
-### Day Of
+### Day-of
 
 3. **Cook Cod.** Water bath at 48-49C...
+
+### Service
+
+4. **Plate.** Spoon emulsion onto warm plates...
 ```
+
+**Rules:**
+
+- Use H3 (`###`) for timeline headings
+- Heading text must exactly match a canonical marker (e.g., `### T-24h`, not `### T-24 Hours`)
+- Number steps sequentially across all timeline sections
+- Bold the step title: `1. **Step Title.** Instructions...`
 
 ## Validation
 

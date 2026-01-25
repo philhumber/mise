@@ -35,3 +35,15 @@ export interface IngredientGroup {
 export interface Recipe extends RecipeMeta {
 	content: string;
 }
+
+/**
+ * Timeline item parsed from recipe content
+ */
+export interface TimelineItem {
+	/** Timeline marker (e.g., "T-48h", "Day-of", "Service") */
+	marker: string;
+	/** Description of what happens at this stage */
+	description: string;
+	/** Anchor ID for linking to method section (e.g., "t-48h") */
+	anchorId: string;
+}
