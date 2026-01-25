@@ -171,7 +171,10 @@
 	}
 
 	.timeline-link {
-		display: block;
+		display: flex;
+		flex-direction: column;
+		justify-content: center;
+		min-height: 44px;
 		padding: var(--spacing-sm) var(--spacing-md);
 		text-decoration: none;
 		border-radius: var(--radius-sm);
@@ -217,8 +220,8 @@
 	/* Floating pill button */
 	.timeline-pill {
 		position: fixed;
-		bottom: var(--spacing-xl);
-		right: var(--spacing-lg);
+		bottom: max(var(--spacing-xl), env(safe-area-inset-bottom));
+		right: max(var(--spacing-lg), env(safe-area-inset-right));
 		z-index: 100;
 		display: flex;
 		align-items: center;
@@ -347,8 +350,8 @@
 		display: flex;
 		align-items: center;
 		justify-content: center;
-		width: 36px;
-		height: 36px;
+		width: 44px;
+		height: 44px;
 		background-color: var(--color-highlight);
 		border: none;
 		border-radius: 50%;
@@ -362,12 +365,13 @@
 	}
 
 	.timeline-drawer-close svg {
-		width: 18px;
-		height: 18px;
+		width: 20px;
+		height: 20px;
 	}
 
 	.timeline-drawer-content {
-		padding: var(--spacing-lg) var(--spacing-xl) var(--spacing-2xl);
+		padding: var(--spacing-lg) var(--spacing-xl);
+		padding-bottom: max(var(--spacing-2xl), env(safe-area-inset-bottom));
 		overflow-y: auto;
 		max-height: calc(70vh - 70px);
 	}

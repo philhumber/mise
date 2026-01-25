@@ -67,8 +67,8 @@
 	{#if inputValue}
 		<button type="button" class="clear-button" onclick={handleClear} aria-label="Clear search">
 			<svg
-				width="16"
-				height="16"
+				width="20"
+				height="20"
 				viewBox="0 0 24 24"
 				fill="none"
 				stroke="currentColor"
@@ -128,12 +128,12 @@
 
 	.clear-button {
 		position: absolute;
-		right: var(--spacing-sm);
+		right: 0;
 		display: flex;
 		align-items: center;
 		justify-content: center;
-		width: 28px;
-		height: 28px;
+		width: 44px;
+		height: 44px;
 		padding: 0;
 		color: var(--color-text-tertiary);
 		background: transparent;

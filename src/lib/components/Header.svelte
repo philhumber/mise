@@ -58,6 +58,9 @@
 	}
 
 	.logo {
+		display: inline-flex;
+		align-items: center;
+		min-height: 44px;
 		color: var(--color-text-primary);
 		text-decoration: none;
 	}

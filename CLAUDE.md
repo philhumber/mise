@@ -173,9 +173,7 @@ src/
 
 ### Next Steps
 
-1. **MISE-53** - Build IngredientGroup.svelte component
-2. **MISE-54** - Create MethodStep.svelte with timeline border
-3. **MISE-56** - Create Notes.svelte component
+1. **MISE-56** - Create Notes.svelte component
 
 ### Completed
 
@@ -204,6 +202,19 @@ src/
   - Recipes migrated to canonical marker format (T-48h, Day-of, Service)
   - `docs/recipe-format.md` updated with timeline documentation
   - Recipe detail page integrated with conditional grid layout
+
+- **MISE-53, 54** - IngredientGroup component and method step styling
+  - IngredientGroup.svelte - Responsive grid of ingredient cards with paper texture
+  - `src/lib/utils/ingredients.ts` - SSR-compatible regex parser for ingredient groups
+  - Method steps styled with vertical copper timeline border (CSS-only)
+  - Numbered step indicators with copper accent circles
+  - Raw Ingredients section hidden via CSS (rendered separately by component)
+
+- **MISE-58, 47, 60, 59** - Mobile responsive sprint
+  - Viewport meta with `viewport-fit=cover` for notched devices
+  - Safe-area-inset padding on layout, Timeline pill, and bottom drawer
+  - Responsive typography scaling at 768px (10-15% bump for tablet/desktop)
+  - All touch targets now meet 44px minimum (SearchBar, Timeline, Header, back link)
 
 ### Scripts
 
