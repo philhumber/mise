@@ -5,7 +5,7 @@ const config = {
 	kit: {
 		adapter: adapter({
 			fallback: '404.html',
-			strict: true
+			strict: false
 		}),
 		paths: {
 			base: '/mise'
@@ -14,6 +14,9 @@ const config = {
 			$components: 'src/lib/components',
 			$styles: 'src/lib/styles',
 			$assets: 'src/lib/assets'
+		},
+		prerender: {
+			handleHttpError: 'warn'
 		}
 	}
 };
