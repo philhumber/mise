@@ -103,10 +103,21 @@ See `docs/recipe-format.md` for full timeline documentation.
 
 ## Tech Stack
 
-- **Framework:** SvelteKit
+- **Framework:** SvelteKit 2 + Svelte 5
 - **Styling:** CSS custom properties, no framework
 - **Content:** Markdown with gray-matter for frontmatter
-- **Search:** Client-side fuzzy search (Fuse.js or similar)
+- **Search:** Client-side fuzzy search (Fuse.js)
+
+## Commands
+
+```bash
+npm run dev       # Start dev server
+npm run build     # Production build
+npm run preview   # Preview production build
+npm run check     # TypeScript + Svelte type checking
+npm run lint      # ESLint + Prettier check
+npm run format    # Auto-format with Prettier
+```
 
 ## Key Screens
 
@@ -125,32 +136,39 @@ See `docs/recipe-format.md` for full timeline documentation.
 ## File Structure
 
 ```
+content/
+└── recipes/           # Recipe markdown files (loaded at build time)
+    ├── kitchen-hydration.md
+    ├── kombu-cod.md
+    └── yuzu-granite.md
 src/
 ├── lib/
 │   ├── assets/
 │   │   └── favicon.svg
 │   ├── components/
+│   │   ├── CategoryFilter.svelte
+│   │   ├── Header.svelte
 │   │   ├── RecipeCard.svelte
 │   │   ├── SearchBar.svelte
-│   │   ├── CategoryFilter.svelte
-│   │   ├── Timeline.svelte
-│   │   ├── IngredientGroup.svelte
-│   │   └── MethodStep.svelte
+│   │   └── Timeline.svelte
+│   ├── stores/
+│   │   └── theme.ts
 │   ├── styles/
 │   │   └── tokens.css
+│   ├── types/
+│   │   └── index.ts
 │   └── utils/
-│       ├── recipes.ts
-│       └── timeline.ts
-├── routes/
-│   ├── +page.svelte (Home)
-│   └── recipe/
-│       └── [slug]/
-│           └── +page.svelte (Detail)
-└── content/
-    └── recipes/
-        ├── kombu-cod.md
-        ├── yuzu-granite.md
-        └── ...
+│       ├── recipes.ts    # Recipe loading & validation
+│       ├── search.ts     # Fuse.js fuzzy search
+│       └── timeline.ts   # Timeline marker parsing
+└── routes/
+    ├── +layout.svelte
+    ├── +page.svelte (Home)
+    ├── +page.server.ts
+    └── recipe/
+        └── [slug]/
+            ├── +page.svelte (Detail)
+            └── +page.server.ts
 ```
 
 ## Design Principles
@@ -173,7 +191,8 @@ src/
 
 ### Next Steps
 
-1. **MISE-56** - Create Notes.svelte component
+1. **MISE-53** - Create IngredientGroup.svelte component (pending)
+2. **MISE-56** - Create Notes.svelte component
 
 ### Completed
 
@@ -203,12 +222,10 @@ src/
   - `docs/recipe-format.md` updated with timeline documentation
   - Recipe detail page integrated with conditional grid layout
 
-- **MISE-53, 54** - IngredientGroup component and method step styling
-  - IngredientGroup.svelte - Responsive grid of ingredient cards with paper texture
-  - `src/lib/utils/ingredients.ts` - SSR-compatible regex parser for ingredient groups
-  - Method steps styled with vertical copper timeline border (CSS-only)
+- **MISE-53, 54** - Method step styling (CSS-only approach)
+  - Method steps styled with vertical copper timeline border
   - Numbered step indicators with copper accent circles
-  - Raw Ingredients section hidden via CSS (rendered separately by component)
+  - Note: IngredientGroup component planned but not yet implemented
 
 - **MISE-58, 47, 60, 59** - Mobile responsive sprint
   - Viewport meta with `viewport-fit=cover` for notched devices
