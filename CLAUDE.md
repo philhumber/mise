@@ -164,10 +164,9 @@ src/
 
 ### Next Steps
 
-1. **MISE-38** - Create Header.svelte with logo and theme toggle
-2. **MISE-39** - Build SearchBar.svelte with debounced input
-3. **MISE-40** - Create CategoryFilter.svelte with pill buttons
-4. **MISE-41** - Build RecipeCard.svelte component
+1. **MISE-42** - Assemble HomePage.svelte layout (integrate all components)
+2. **MISE-43** - Create RecipeHeader.svelte (title, subtitle, back button)
+3. **MISE-44** - Build Timeline.svelte for recipe detail page
 
 ### Completed
 
@@ -181,6 +180,13 @@ src/
   - 3 sample recipes in `content/recipes/` (kombu-cod, yuzu-granite, kitchen-hydration)
   - Server load functions for home and recipe detail pages
   - Recipe format documentation (`docs/recipe-format.md`)
+
+- **MISE-38, 39, 40, 41** - Home page components
+  - Header.svelte - Logo and theme toggle (was already implemented)
+  - SearchBar.svelte - Debounced fuzzy search with clear button
+  - CategoryFilter.svelte - Pill buttons for category filtering
+  - RecipeCard.svelte - Recipe summary card (was already implemented)
+  - Home page now has full search + filter functionality
 
 ### Scripts
 

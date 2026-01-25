@@ -1,15 +1,25 @@
 <script lang="ts">
 	import RecipeCard from '$lib/components/RecipeCard.svelte';
+	import SearchBar from '$lib/components/SearchBar.svelte';
+	import CategoryFilter from '$lib/components/CategoryFilter.svelte';
+	import { searchRecipes } from '$lib/utils/search';
 
 	let { data } = $props();
 
 	const categories = ['all', 'main', 'starter', 'dessert', 'side', 'drink', 'sauce'];
+	let searchQuery = $state('');
 	let activeCategory = $state('all');
 
 	const filteredRecipes = $derived(
-		activeCategory === 'all'
-			? data.recipes
-			: data.recipes.filter((r) => r.category === activeCategory)
+		(() => {
+			// First, apply search if query exists
+			const searched = searchQuery.trim() ? searchRecipes(data.recipes, searchQuery) : data.recipes;
+
+			// Then, apply category filter
+			return activeCategory === 'all'
+				? searched
+				: searched.filter((r) => r.category === activeCategory);
+		})()
 	);
 </script>
 
@@ -19,17 +29,11 @@
 		<p class="text-meta hero-subtitle">A curated collection for serious home cooks</p>
 	</section>
 
-	<nav class="filters" aria-label="Filter by category">
-		{#each categories as category (category)}
-			<button
-				class="pill"
-				class:active={activeCategory === category}
-				onclick={() => (activeCategory = category)}
-			>
-				{category}
-			</button>
-		{/each}
-	</nav>
+	<div class="search-section">
+		<SearchBar bind:value={searchQuery} />
+	</div>
+
+	<CategoryFilter {categories} bind:activeCategory />
 
 	<section class="recipes" aria-label="Recipe list">
 		{#each filteredRecipes as recipe (recipe.slug)}
@@ -37,7 +41,7 @@
 		{/each}
 
 		{#if filteredRecipes.length === 0}
-			<p class="text-meta empty">No recipes in this category yet.</p>
+			<p class="text-meta empty">No recipes found.</p>
 		{/if}
 	</section>
 </div>
@@ -49,7 +53,7 @@
 	}
 
 	.hero {
-		margin-bottom: var(--spacing-3xl);
+		margin-bottom: var(--spacing-2xl);
 		text-align: center;
 	}
 
@@ -63,12 +67,12 @@
 		margin: 0;
 	}
 
-	.filters {
-		display: flex;
-		flex-wrap: wrap;
-		gap: var(--spacing-sm);
+	.search-section {
+		margin-bottom: var(--spacing-xl);
+	}
+
+	:global(.filters) {
 		margin-bottom: var(--spacing-2xl);
-		justify-content: center;
 	}
 
 	.recipes {
