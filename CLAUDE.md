@@ -194,6 +194,7 @@ src/
 │   ├── components/
 │   │   ├── CategoryFilter.svelte
 │   │   ├── Header.svelte           # Hamburger menu navigation
+│   │   ├── IngredientGroup.svelte  # Ingredient card grid
 │   │   ├── RecipeCard.svelte
 │   │   ├── SearchBar.svelte
 │   │   ├── Timeline.svelte
@@ -213,6 +214,7 @@ src/
 │   ├── types/
 │   │   └── index.ts          # Includes Meal types
 │   └── utils/
+│       ├── ingredients.ts    # Ingredient group parser
 │       ├── search.ts         # Fuse.js fuzzy search
 │       └── timeline.ts       # Timeline marker parsing
 └── routes/
