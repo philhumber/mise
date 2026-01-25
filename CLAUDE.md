@@ -128,8 +128,10 @@ src/
 │   │   ├── Timeline.svelte
 │   │   ├── IngredientGroup.svelte
 │   │   └── MethodStep.svelte
-│   └── styles/
-│       └── tokens.css
+│   ├── styles/
+│   │   └── tokens.css
+│   └── utils/
+│       └── recipes.ts
 ├── routes/
 │   ├── +page.svelte (Home)
 │   └── recipe/
@@ -162,9 +164,17 @@ src/
 
 ### Next Steps
 
-1. **MISE-15** - Configure @sveltejs/adapter-static for SSG
-2. **MISE-16** - Create project folder structure
-3. **MISE-17** - Install core dependencies (gray-matter, marked, fuse.js)
+1. **MISE-38** - Create Header.svelte with logo and theme toggle
+2. **MISE-39** - Build SearchBar.svelte with debounced input
+3. **MISE-40** - Create CategoryFilter.svelte with pill buttons
+4. **MISE-41** - Build RecipeCard.svelte component
+
+### Completed This Session
+
+- **MISE-30, 31, 32, 33** - Recipe data layer (`src/lib/utils/recipes.ts`)
+  - `getAllRecipes()` - Returns RecipeMeta[] for listing pages
+  - `getRecipeBySlug(slug)` - Returns full Recipe with rendered HTML
+  - Validates frontmatter at build time, throws typed errors
 
 ### Scripts
 
