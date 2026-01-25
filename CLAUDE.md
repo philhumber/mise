@@ -87,11 +87,19 @@ serves: 2
 tags: [seafood, sous-vide, make-ahead]
 ```
 
-### Timeline Markers
+### Timeline Markers (Canonical)
 
-- `T-48h`, `T-24h`, `T-4h` - countdown format
-- `Day of`, `Day of (Morning)` - same-day prep
-- `Service` - final steps at plating
+| Marker    | Use Case                |
+| --------- | ----------------------- |
+| `T-48h`   | 48 hours before service |
+| `T-24h`   | 24 hours before service |
+| `T-12h`   | 12 hours before service |
+| `T-4h`    | 4 hours before service  |
+| `T-1h`    | 1 hour before service   |
+| `Day-of`  | Morning of service      |
+| `Service` | Final plating steps     |
+
+See `docs/recipe-format.md` for full timeline documentation.
 
 ## Tech Stack
 
@@ -131,7 +139,8 @@ src/
 │   ├── styles/
 │   │   └── tokens.css
 │   └── utils/
-│       └── recipes.ts
+│       ├── recipes.ts
+│       └── timeline.ts
 ├── routes/
 │   ├── +page.svelte (Home)
 │   └── recipe/
@@ -164,9 +173,9 @@ src/
 
 ### Next Steps
 
-1. **MISE-42** - Assemble HomePage.svelte layout (integrate all components)
-2. **MISE-43** - Create RecipeHeader.svelte (title, subtitle, back button)
-3. **MISE-44** - Build Timeline.svelte for recipe detail page
+1. **MISE-53** - Build IngredientGroup.svelte component
+2. **MISE-54** - Create MethodStep.svelte with timeline border
+3. **MISE-56** - Create Notes.svelte component
 
 ### Completed
 
@@ -187,6 +196,14 @@ src/
   - CategoryFilter.svelte - Pill buttons for category filtering
   - RecipeCard.svelte - Recipe summary card (was already implemented)
   - Home page now has full search + filter functionality
+
+- **MISE-52, 55** - Timeline component and marker parsing
+  - Timeline.svelte - Sticky sidebar (desktop) + floating pill with bottom sheet drawer (mobile)
+  - `src/lib/utils/timeline.ts` - SSR-compatible regex parser for timeline items
+  - TimelineItem type added to `src/lib/types/index.ts`
+  - Recipes migrated to canonical marker format (T-48h, Day-of, Service)
+  - `docs/recipe-format.md` updated with timeline documentation
+  - Recipe detail page integrated with conditional grid layout
 
 ### Scripts
 

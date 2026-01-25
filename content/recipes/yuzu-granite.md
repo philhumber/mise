@@ -11,7 +11,7 @@ tags: [frozen, make-ahead, refreshing]
 
 ## Timeline
 
-- **Day of (Morning)** Prepare granité base and freeze
+- **Day-of** Prepare granité base and freeze
 - **Service** Scrape granité, whip matcha cream, plate
 
 ## Ingredients
@@ -37,7 +37,7 @@ tags: [frozen, make-ahead, refreshing]
 
 ## Method
 
-### Day Of (Morning)
+### Day-of
 
 1. **Make Tea Syrup.** Bring water and sugar to a simmer, stirring until dissolved. Remove from heat. Add tea bags or loose tea. Steep for 5 minutes - no longer or it becomes bitter. Strain and cool to room temperature.
 
