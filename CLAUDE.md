@@ -103,21 +103,38 @@ See `docs/recipe-format.md` for full timeline documentation.
 
 ## Tech Stack
 
-- **Framework:** SvelteKit 2 + Svelte 5
+- **Frontend:** SvelteKit 2 + Svelte 5 (static adapter)
+- **Backend:** PHP API with PostgreSQL database
 - **Styling:** CSS custom properties, no framework
-- **Content:** Markdown with gray-matter for frontmatter
+- **Content:** Markdown with YAML frontmatter (gray-matter)
 - **Search:** Client-side fuzzy search (Fuse.js)
+- **Deployment:** Static build + PHP API on shared hosting
 
 ## Commands
 
 ```bash
-npm run dev       # Start dev server
-npm run build     # Production build
+npm install       # Install dependencies
+npm run dev       # Start dev server (http://localhost:5173)
+npm run build     # Production build to /build
 npm run preview   # Preview production build
 npm run check     # TypeScript + Svelte type checking
 npm run lint      # ESLint + Prettier check
 npm run format    # Auto-format with Prettier
 ```
+
+## Environment Setup
+
+### Frontend (SvelteKit)
+
+No environment variables required for development. The static build works standalone with bundled recipes.
+
+### Backend (PHP + PostgreSQL)
+
+For recipe upload functionality:
+
+1. Create `api/config.php` with database credentials (see `api/config.php.example`)
+2. Set up PostgreSQL database with recipes table
+3. Configure `UPLOAD_PASSWORD` for authentication
 
 ## Key Screens
 
@@ -136,13 +153,21 @@ npm run format    # Auto-format with Prettier
 ## File Structure
 
 ```
-content/
-└── recipes/           # Recipe markdown files (loaded at build time)
-    ├── kitchen-hydration.md
-    ├── kombu-cod.md
-    └── yuzu-granite.md
+api/                          # PHP backend (deployed alongside static build)
+├── auth.php                  # Session-based authentication
+├── config.php                # Database config (not in git)
+├── recipes.php               # Recipe CRUD endpoints
+└── lib/                      # PHP utilities
+
 src/
+├── content/
+│   └── recipes/              # Sample recipes (build-time, bundled)
+│       ├── kitchen-hydration-drink.md
+│       ├── kombu-cod-recipe.md
+│       └── yuzu-green-tea-granite.md
 ├── lib/
+│   ├── api/
+│   │   └── recipes.ts        # API client for PHP backend
 │   ├── assets/
 │   │   └── favicon.svg
 │   ├── components/
@@ -150,26 +175,54 @@ src/
 │   │   ├── Header.svelte
 │   │   ├── RecipeCard.svelte
 │   │   ├── SearchBar.svelte
-│   │   └── Timeline.svelte
+│   │   ├── Timeline.svelte
+│   │   ├── UploadButton.svelte
+│   │   └── UploadModal.svelte
 │   ├── stores/
-│   │   └── theme.ts
+│   │   ├── theme.ts
+│   │   └── pageTitle.ts
 │   ├── styles/
 │   │   └── tokens.css
 │   ├── types/
 │   │   └── index.ts
 │   └── utils/
-│       ├── recipes.ts    # Recipe loading & validation
-│       ├── search.ts     # Fuse.js fuzzy search
-│       └── timeline.ts   # Timeline marker parsing
+│       ├── search.ts         # Fuse.js fuzzy search
+│       └── timeline.ts       # Timeline marker parsing
 └── routes/
     ├── +layout.svelte
-    ├── +page.svelte (Home)
-    ├── +page.server.ts
+    ├── +layout.ts
+    ├── +page.svelte          # Home (search + browse)
     └── recipe/
         └── [slug]/
-            ├── +page.svelte (Detail)
-            └── +page.server.ts
+            ├── +page.svelte  # Recipe detail
+            └── +page.ts
 ```
+
+## Architecture
+
+### Data Flow
+
+1. **Bundled recipes** (`src/content/recipes/`) - Sample recipes loaded at build time via Vite's `import.meta.glob`. These are static and bundled into the SvelteKit build.
+
+2. **User recipes** (PostgreSQL) - Uploaded recipes stored in database, fetched via PHP API at runtime. The API client (`src/lib/api/recipes.ts`) handles authentication and CRUD operations.
+
+3. **Merged view** - Home page combines bundled + user recipes for unified search and browse.
+
+### PHP API Endpoints
+
+| Endpoint | Method | Description |
+|----------|--------|-------------|
+| `/api/auth.php` | GET | Check auth status |
+| `/api/auth.php` | POST | Login with password |
+| `/api/auth.php` | DELETE | Logout |
+| `/api/recipes.php` | GET | List all user recipes |
+| `/api/recipes.php?slug=X` | GET | Get single recipe |
+| `/api/recipes.php` | POST | Upload new recipe (markdown) |
+| `/api/recipes.php?slug=X` | DELETE | Delete recipe |
+
+### Authentication
+
+Simple session-based auth with a shared password. Upload functionality requires authentication.
 
 ## Design Principles
 
@@ -183,58 +236,7 @@ src/
 
 **JIRA Project:** [MISE Board](https://philhumber.atlassian.net/jira/software/projects/MISE/boards/34/backlog)
 
-### Sprint Planning (Complete)
-
-- **Sprints 1-9:** MVP (193 story points) - Core app with PWA support
-- **Sprints 10-11:** Future features (52 story points) - Cook Mode & Shopping List
-- **Total:** 61 tasks across 8 epics
-
-### Next Steps
-
-1. **MISE-53** - Create IngredientGroup.svelte component (pending)
-2. **MISE-56** - Create Notes.svelte component
-
-### Completed
-
-- **MISE-30, 31, 32, 33** - Recipe data layer (`src/lib/utils/recipes.ts`)
-  - `getAllRecipes()` - Returns RecipeMeta[] for listing pages
-  - `getRecipeBySlug(slug)` - Returns full Recipe with rendered HTML
-  - Validates frontmatter at build time, throws typed errors
-
-- **MISE-34, 35, 36, 37** - Search, content, and server load functions
-  - `searchRecipes()` - Fuse.js fuzzy search utility (`src/lib/utils/search.ts`)
-  - 3 sample recipes in `content/recipes/` (kombu-cod, yuzu-granite, kitchen-hydration)
-  - Server load functions for home and recipe detail pages
-  - Recipe format documentation (`docs/recipe-format.md`)
-
-- **MISE-38, 39, 40, 41** - Home page components
-  - Header.svelte - Logo and theme toggle (was already implemented)
-  - SearchBar.svelte - Debounced fuzzy search with clear button
-  - CategoryFilter.svelte - Pill buttons for category filtering
-  - RecipeCard.svelte - Recipe summary card (was already implemented)
-  - Home page now has full search + filter functionality
-
-- **MISE-52, 55** - Timeline component and marker parsing
-  - Timeline.svelte - Sticky sidebar (desktop) + floating pill with bottom sheet drawer (mobile)
-  - `src/lib/utils/timeline.ts` - SSR-compatible regex parser for timeline items
-  - TimelineItem type added to `src/lib/types/index.ts`
-  - Recipes migrated to canonical marker format (T-48h, Day-of, Service)
-  - `docs/recipe-format.md` updated with timeline documentation
-  - Recipe detail page integrated with conditional grid layout
-
-- **MISE-53, 54** - Method step styling (CSS-only approach)
-  - Method steps styled with vertical copper timeline border
-  - Numbered step indicators with copper accent circles
-  - Note: IngredientGroup component planned but not yet implemented
-
-- **MISE-58, 47, 60, 59** - Mobile responsive sprint
-  - Viewport meta with `viewport-fit=cover` for notched devices
-  - Safe-area-inset padding on layout, Timeline pill, and bottom drawer
-  - Responsive typography scaling at 768px (10-15% bump for tablet/desktop)
-  - All touch targets now meet 44px minimum (SearchBar, Timeline, Header, back link)
-
 ### Scripts
 
 - `scripts/jira.ps1` - JIRA CLI for issue management
 - `scripts/jira-batch-create.ps1` - Batch issue creation
-- `scripts/jira-tasks.json` - Complete task definitions
