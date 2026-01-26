@@ -330,6 +330,8 @@ function Deploy-Files {
             $Config.TargetPath
             "/E"           # Copy subdirectories
             "/PURGE"       # Delete files in target not in source
+            "/XD"          # Exclude directories
+            "api"          # Don't purge api folder (has server config)
             "/R:1"
             "/W:1"
             "/XF"          # Exclude files
@@ -353,6 +355,45 @@ function Deploy-Files {
         }
     } else {
         Write-Warning "    Build not found - run without -SkipBuild"
+    }
+
+    # Deploy PHP API
+    $apiSource = Join-Path $Config.ProjectRoot "api"
+    $apiTarget = Join-Path $Config.TargetPath "api"
+
+    if (Test-Path $apiSource) {
+        Write-Host "`n  PHP API:" -ForegroundColor White
+
+        # Note: config.php is excluded to preserve server-specific credentials
+        $robocopyArgs = @(
+            $apiSource
+            $apiTarget
+            "/E"           # Copy subdirectories
+            "/PURGE"       # Delete files in target not in source
+            "/R:1"
+            "/W:1"
+            "/XF"          # Exclude files
+            "config.php"   # Server has its own config
+            "test-*.php"   # Test files
+            "setup-*.php"  # Setup files
+            "check-*.php"  # Check files
+        )
+
+        if ($DryRun) {
+            $robocopyArgs += "/L"  # List only
+        }
+
+        & robocopy @robocopyArgs | Out-Null
+        $apiFiles = (Get-ChildItem -Path $apiSource -Recurse -File | Where-Object { $_.Name -ne "config.php" }).Count
+
+        if ($DryRun) {
+            Write-Host "    [DRY RUN] $apiFiles API files would be synced"
+            Write-Host "    [DRY RUN] config.php excluded (server has its own)"
+        } else {
+            Write-Host "    $apiFiles API files synced" -ForegroundColor Gray
+            Write-Host "    config.php excluded (server has its own)" -ForegroundColor Gray
+            $stats.FilesCopied += $apiFiles
+        }
     }
 
     return $stats

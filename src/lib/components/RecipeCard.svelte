@@ -16,7 +16,7 @@
 </script>
 
 <!-- eslint-disable-next-line svelte/no-navigation-without-resolve -->
-<a href={resolveRoute('/recipe/[slug]', { slug: recipe.slug })} class="card texture-paper">
+<a href={resolveRoute('/recipe/[slug]', { slug: recipe.slug })} class="card texture-paper" data-sveltekit-reload>
 	<div class="card-content">
 		<span class="category pill">{recipe.category}</span>
 

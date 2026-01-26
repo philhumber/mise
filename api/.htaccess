@@ -1,0 +1,39 @@
+# Mïse API Security Configuration
+
+# Deny access to config files
+<Files "config.php">
+    Require all denied
+</Files>
+
+# Deny access to lib directory
+<Files "lib/*">
+    Require all denied
+</Files>
+
+# Block direct access to .php files in lib/ subdirectory
+<FilesMatch "^lib/.*\.php$">
+    Require all denied
+</FilesMatch>
+
+# Alternative: Deny access to entire lib directory
+# (uncomment if the above doesn't work)
+# <DirectoryMatch "^.*/lib/">
+#     Require all denied
+# </DirectoryMatch>
+
+# Deny access to test files (if any remain)
+<FilesMatch "(test-|setup-|check-).*\.php$">
+    Require all denied
+</FilesMatch>
+
+# Disable directory listing
+Options -Indexes
+
+# Set default character encoding
+AddDefaultCharset UTF-8
+
+# Enable CORS for allowed origins (backup, in case PHP headers fail)
+<IfModule mod_headers.c>
+    Header always set Access-Control-Allow-Methods "GET, POST, DELETE, OPTIONS"
+    Header always set Access-Control-Allow-Headers "Content-Type, Authorization"
+</IfModule>
