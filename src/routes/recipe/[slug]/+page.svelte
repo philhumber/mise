@@ -3,7 +3,8 @@
 	import { goto } from '$app/navigation';
 	import { resolve } from '$app/paths';
 	import Timeline from '$lib/components/Timeline.svelte';
-	import { fetchUserRecipe, checkAuth, deleteRecipe } from '$lib/api/recipes';
+	import EditModal from '$lib/components/EditModal.svelte';
+	import { fetchUserRecipe, fetchRecipeForEdit, checkAuth, deleteRecipe } from '$lib/api/recipes';
 	import { setPageTitle, clearPageTitle } from '$lib/stores/pageTitle';
 	import type { Recipe } from '$lib/types';
 
@@ -15,6 +16,11 @@
 	let isAuthenticated = $state(false);
 	let showDeleteConfirm = $state(false);
 	let isDeleting = $state(false);
+
+	// Edit modal state
+	let showEditModal = $state(false);
+	let recipeMarkdown = $state('');
+	let isLoadingMarkdown = $state(false);
 
 	const isLoading = $derived(!recipe && !fetchComplete);
 
@@ -68,6 +74,32 @@
 			alert('Failed to delete recipe');
 		}
 	}
+
+	async function handleEditClick() {
+		if (!data.slug || isLoadingMarkdown) return;
+
+		isLoadingMarkdown = true;
+		const editData = await fetchRecipeForEdit(data.slug);
+		isLoadingMarkdown = false;
+
+		if (editData) {
+			recipeMarkdown = editData.markdown;
+			showEditModal = true;
+		} else {
+			alert('Failed to load recipe for editing');
+		}
+	}
+
+	async function handleEditSuccess() {
+		showEditModal = false;
+		// Refresh the recipe data
+		if (data.slug) {
+			const updated = await fetchUserRecipe(data.slug);
+			if (updated) {
+				recipe = updated;
+			}
+		}
+	}
 </script>
 
 {#if isLoading}
@@ -85,49 +117,51 @@
 	</div>
 {:else}
 	<div class="recipe-detail">
-		<div class="stats-bar">
-			<div class="stat">
-				<span class="stat-value">{recipe.active_time}</span>
-				<span class="stat-label">Active</span>
-			</div>
-			<div class="stat">
-				<span class="stat-value">{recipe.total_time}</span>
-				<span class="stat-label">Total</span>
-			</div>
-			<div class="stat">
-				<span class="stat-value">{recipe.serves}</span>
-				<span class="stat-label">Serves</span>
-			</div>
-			<div class="stat">
-				<div class="difficulty-dots">
-					{#each [0, 1, 2] as i (i)}
-						<span class="dot" class:filled={i < difficultyDots[recipe.difficulty]}></span>
-					{/each}
+		<div class="recipe-header">
+			{#if isAuthenticated}
+				<div class="ghost-actions">
+					<button
+						class="ghost-btn"
+						onclick={handleEditClick}
+						disabled={isLoadingMarkdown}
+						aria-label="Edit recipe"
+					>
+						<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+							<path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7" />
+							<path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z" />
+						</svg>
+					</button>
+					<button
+						class="ghost-btn ghost-btn-danger"
+						onclick={() => { showDeleteConfirm = true; }}
+						aria-label="Delete recipe"
+					>
+						<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+							<path d="M3 6h18M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2M10 11v6M14 11v6" />
+						</svg>
+					</button>
 				</div>
-				<span class="stat-label">{recipe.difficulty}</span>
-			</div>
-		</div>
+			{/if}
 
-		<div class="tags">
-			{#each recipe.tags as tag (tag)}
-				<span class="pill">{tag}</span>
-			{/each}
-		</div>
+			<p class="recipe-meta">
+				<span class="meta-value">{recipe.active_time}</span> active
+				<span class="meta-sep">·</span>
+				<span class="meta-value">{recipe.total_time}</span> total
+				<span class="meta-sep">·</span>
+				Serves <span class="meta-value">{recipe.serves}</span>
+				<span class="meta-sep">·</span>
+				<span class="difficulty-inline">
+					{#each [0, 1, 2] as i (i)}
+						<span class="dot-sm" class:filled={i < difficultyDots[recipe.difficulty]}></span>
+					{/each}
+				</span>
+				{recipe.difficulty}
+			</p>
 
-		{#if isAuthenticated}
-			<div class="recipe-actions">
-				<button
-					class="delete-button"
-					onclick={() => { showDeleteConfirm = true; }}
-					aria-label="Delete recipe"
-				>
-					<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-						<path d="M3 6h18M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2M10 11v6M14 11v6" />
-					</svg>
-					Delete
-				</button>
-			</div>
-		{/if}
+			{#if recipe.tags.length > 0}
+				<p class="recipe-tags">{recipe.tags.join(', ')}</p>
+			{/if}
+		</div>
 
 		<div class="recipe-layout">
 			<Timeline content={recipe.content} />
@@ -139,6 +173,15 @@
 		</div>
 	</div>
 {/if}
+
+<!-- Edit modal -->
+<EditModal
+	open={showEditModal}
+	slug={data.slug}
+	initialMarkdown={recipeMarkdown}
+	onClose={() => { showEditModal = false; }}
+	onSuccess={handleEditSuccess}
+/>
 
 <!-- Delete confirmation dialog -->
 {#if showDeleteConfirm}
@@ -190,56 +233,56 @@
 		}
 	}
 
-	.stats-bar {
-		display: flex;
-		flex-wrap: wrap;
-		gap: var(--spacing-xl);
-		padding: var(--spacing-lg) 0;
-		margin-bottom: var(--spacing-xl);
-		border-top: 1px solid var(--color-border);
-		border-bottom: 1px solid var(--color-border);
+	/* Recipe header - compact meta line */
+	.recipe-header {
+		position: relative;
+		margin-bottom: var(--spacing-lg);
+		padding-right: 80px; /* Space for ghost actions */
 	}
 
-	.stat {
-		display: flex;
-		flex-direction: column;
-		gap: 2px;
+	.recipe-meta {
+		font-family: var(--font-body);
+		font-size: var(--font-size-meta);
+		color: var(--color-text-secondary);
+		margin: 0;
+		line-height: 1.6;
 	}
 
-	.stat-value {
+	.meta-value {
 		font-family: var(--font-display);
-		font-size: var(--font-size-body);
+		font-weight: 500;
 		color: var(--color-text-primary);
 	}
 
-	.stat-label {
-		font-family: var(--font-body);
-		font-size: var(--font-size-small);
+	.meta-sep {
+		margin: 0 var(--spacing-sm);
 		color: var(--color-text-tertiary);
-		text-transform: capitalize;
 	}
 
-	.difficulty-dots {
-		display: flex;
-		gap: 4px;
+	.difficulty-inline {
+		display: inline-flex;
+		gap: 3px;
+		margin-right: var(--spacing-xs);
+		vertical-align: middle;
 	}
 
-	.dot {
-		width: 8px;
-		height: 8px;
-		background-color: var(--color-border);
+	.dot-sm {
+		width: 6px;
+		height: 6px;
+		background: var(--color-border);
 		border-radius: 50%;
 	}
 
-	.dot.filled {
-		background-color: var(--color-accent);
+	.dot-sm.filled {
+		background: var(--color-accent);
 	}
 
-	.tags {
-		display: flex;
-		flex-wrap: wrap;
-		gap: var(--spacing-sm);
-		margin-bottom: var(--spacing-2xl);
+	.recipe-tags {
+		font-family: var(--font-body);
+		font-size: var(--font-size-small);
+		color: var(--color-text-tertiary);
+		margin: var(--spacing-sm) 0 0;
+		font-style: italic;
 	}
 
 	/* Recipe layout - grid on desktop for timeline sidebar */
@@ -326,36 +369,47 @@
 		color: var(--color-text-primary);
 	}
 
-	/* Recipe actions (delete button) */
-	.recipe-actions {
-		margin-bottom: var(--spacing-2xl);
-	}
-
-	.delete-button {
-		display: inline-flex;
-		align-items: center;
+	/* Ghost action buttons - top right */
+	.ghost-actions {
+		position: absolute;
+		top: 0;
+		right: 0;
+		display: flex;
 		gap: var(--spacing-xs);
-		padding: var(--spacing-sm) var(--spacing-md);
-		font-family: var(--font-body);
-		font-size: var(--font-size-small);
-		color: var(--color-text-secondary);
+	}
+
+	.ghost-btn {
+		width: 36px;
+		height: 36px;
+		display: flex;
+		align-items: center;
+		justify-content: center;
 		background: transparent;
-		border: 1px solid var(--color-border);
-		border-radius: 6px;
+		border: none;
+		border-radius: var(--radius-sm);
+		color: var(--color-text-tertiary);
+		opacity: 0.4;
 		cursor: pointer;
-		transition:
-			color var(--transition-fast),
-			border-color var(--transition-fast),
-			background-color var(--transition-fast);
+		transition: all var(--transition-fast);
 	}
 
-	.delete-button:hover {
+	.ghost-btn:hover:not(:disabled) {
+		opacity: 1;
+		color: var(--color-accent);
+		background: var(--color-highlight);
+	}
+
+	.ghost-btn-danger:hover:not(:disabled) {
 		color: #dc2626;
-		border-color: #dc2626;
-		background-color: rgba(220, 38, 38, 0.05);
+		background: rgba(220, 38, 38, 0.08);
 	}
 
-	.delete-button svg {
+	.ghost-btn:disabled {
+		opacity: 0.2;
+		cursor: not-allowed;
+	}
+
+	.ghost-btn svg {
 		flex-shrink: 0;
 	}
 

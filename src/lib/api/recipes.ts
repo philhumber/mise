@@ -167,6 +167,72 @@ export async function uploadRecipe(
 }
 
 /**
+ * Fetch a recipe with its raw markdown content (for editing)
+ */
+export async function fetchRecipeForEdit(
+	slug: string
+): Promise<{ recipe: Recipe; markdown: string } | null> {
+	try {
+		const res = await fetch(
+			`${API_BASE}/recipes.php?slug=${encodeURIComponent(slug)}&edit=1`,
+			{ credentials: 'include' }
+		);
+
+		if (!res.ok) {
+			if (res.status === 404) return null;
+			console.error('Failed to fetch recipe for edit:', res.status);
+			return null;
+		}
+
+		const data = await res.json();
+		return {
+			recipe: transformRecipe(data),
+			markdown: String(data.markdown || '')
+		};
+	} catch (err) {
+		console.error('Error fetching recipe for edit:', err);
+		return null;
+	}
+}
+
+/**
+ * Update an existing recipe with new markdown content
+ */
+export async function updateRecipe(
+	slug: string,
+	markdown: string
+): Promise<{ success: boolean; recipe?: Recipe; errors?: ValidationError[] }> {
+	try {
+		const res = await fetch(`${API_BASE}/recipes.php?slug=${encodeURIComponent(slug)}`, {
+			method: 'PUT',
+			headers: { 'Content-Type': 'application/json' },
+			credentials: 'include',
+			body: JSON.stringify({ markdown })
+		});
+
+		const data: UploadResponse = await res.json();
+
+		if (!res.ok || !data.success) {
+			return {
+				success: false,
+				errors: data.errors || [{ field: 'general', message: 'Update failed' }]
+			};
+		}
+
+		return {
+			success: true,
+			recipe: data.recipe ? transformRecipe(data.recipe) : undefined
+		};
+	} catch (err) {
+		console.error('Error updating recipe:', err);
+		return {
+			success: false,
+			errors: [{ field: 'general', message: 'Network error' }]
+		};
+	}
+}
+
+/**
  * Delete a user recipe
  */
 export async function deleteRecipe(slug: string): Promise<boolean> {
