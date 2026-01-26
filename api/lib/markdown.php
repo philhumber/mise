@@ -214,11 +214,14 @@ function markdownToHtml(string $markdown): string
         $html
     );
 
-    // Ordered lists
+    // Ordered lists (allow blank lines between items)
     $html = preg_replace_callback(
-        '/^(\d+\. .+(?:\n\d+\. .+)*)/m',
+        '/^(\d+\. .+(?:\n+\d+\. .+)*)/m',
         function ($matches) {
-            $items = preg_replace('/^\d+\. (.+)$/m', '<li>$1</li>', $matches[1]);
+            // Remove blank lines and convert items to <li>
+            $content = preg_replace('/^\s*$/m', '', $matches[1]);
+            $content = preg_replace('/\n+/', "\n", $content);
+            $items = preg_replace('/^\d+\. (.+)$/m', '<li>$1</li>', $content);
             return "<ol>\n$items\n</ol>";
         },
         $html

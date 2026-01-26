@@ -24,8 +24,20 @@
 <style>
 	.filters {
 		display: flex;
-		flex-wrap: wrap;
 		gap: var(--spacing-sm);
-		justify-content: center;
+		overflow-x: auto;
+		scroll-snap-type: x mandatory;
+		-webkit-overflow-scrolling: touch;
+		scrollbar-width: none;
+		padding-block: var(--spacing-xs);
+	}
+
+	.filters::-webkit-scrollbar {
+		display: none;
+	}
+
+	.pill {
+		flex-shrink: 0;
+		scroll-snap-align: start;
 	}
 </style>
