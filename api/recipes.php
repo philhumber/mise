@@ -2,10 +2,12 @@
 /**
  * Recipes API Endpoint
  *
- * GET /api/recipes.php         - List all user recipes
- * GET /api/recipes.php?slug=x  - Get single recipe by slug
- * POST /api/recipes.php        - Create new recipe (requires auth)
- * DELETE /api/recipes.php?slug=x - Delete recipe (requires auth)
+ * GET /api/recipes.php              - List all user recipes
+ * GET /api/recipes.php?slug=x       - Get single recipe by slug
+ * GET /api/recipes.php?slug=x&edit=1 - Get recipe with markdown (requires auth)
+ * POST /api/recipes.php             - Create new recipe (requires auth)
+ * PUT /api/recipes.php?slug=x       - Update recipe (requires auth)
+ * DELETE /api/recipes.php?slug=x    - Delete recipe (requires auth)
  */
 
 require_once __DIR__ . '/config.php';
@@ -34,6 +36,9 @@ try {
         case 'DELETE':
             handleDelete();
             break;
+        case 'PUT':
+            handlePut();
+            break;
         case 'OPTIONS':
             // CORS preflight - already handled by handleCors()
             http_response_code(204);
@@ -61,7 +66,7 @@ function handleCors(): void
         header('Access-Control-Allow-Credentials: true');
     }
 
-    header('Access-Control-Allow-Methods: GET, POST, DELETE, OPTIONS');
+    header('Access-Control-Allow-Methods: GET, POST, PUT, DELETE, OPTIONS');
     header('Access-Control-Allow-Headers: Content-Type, Authorization');
     header('Access-Control-Max-Age: 86400');
 }
@@ -74,8 +79,11 @@ function handleGet(): void
     $slug = $_GET['slug'] ?? null;
 
     if ($slug) {
-        // Get single recipe
-        $recipe = getRecipeBySlug($slug);
+        // Include markdown if authenticated and edit mode requested
+        $editMode = isset($_GET['edit']) && $_GET['edit'] === '1';
+        $includeMarkdown = $editMode && isAuthenticated();
+
+        $recipe = getRecipeBySlug($slug, $includeMarkdown);
         if (!$recipe) {
             sendError(404, 'Recipe not found');
         }
@@ -177,6 +185,74 @@ function handleDelete(): void
 }
 
 /**
+ * Handle PUT requests (update recipe)
+ */
+function handlePut(): void
+{
+    // Check authentication
+    if (!isAuthenticated()) {
+        sendError(401, 'Authentication required');
+    }
+
+    $slug = $_GET['slug'] ?? null;
+    if (!$slug) {
+        sendError(400, 'Missing slug parameter');
+    }
+
+    // Check if recipe exists
+    if (!recipeSlugExists($slug)) {
+        sendError(404, 'Recipe not found');
+    }
+
+    // Get request body
+    $body = file_get_contents('php://input');
+    $data = json_decode($body, true);
+
+    if (!$data || !isset($data['markdown'])) {
+        sendError(400, 'Missing markdown content');
+    }
+
+    // Parse markdown
+    $parsed = parseFrontmatter($data['markdown']);
+    if (!$parsed) {
+        sendError(400, 'Invalid markdown format - missing or malformed frontmatter');
+    }
+
+    // Validate frontmatter
+    $validation = validateRecipe($parsed['frontmatter']);
+    if (!$validation->valid) {
+        sendJson([
+            'success' => false,
+            'errors' => array_map(fn($e) => $e->toArray(), $validation->errors),
+        ], 400);
+        return;
+    }
+
+    // Convert markdown to HTML and sanitize
+    $html = markdownToHtml($parsed['content']);
+    $sanitizedHtml = sanitizeHtml($html);
+
+    // Update in database (slug stays the same)
+    $recipe = updateRecipe($slug, [
+        'title' => $validation->data['title'],
+        'subtitle' => $validation->data['subtitle'],
+        'category' => $validation->data['category'],
+        'difficulty' => $validation->data['difficulty'],
+        'active_time' => $validation->data['active_time'],
+        'total_time' => $validation->data['total_time'],
+        'serves' => $validation->data['serves'],
+        'tags' => $validation->data['tags'],
+        'markdown' => $data['markdown'],
+        'content' => $sanitizedHtml,
+    ]);
+
+    sendJson([
+        'success' => true,
+        'recipe' => $recipe,
+    ]);
+}
+
+/**
  * Check if the request is authenticated
  */
 function isAuthenticated(): bool
@@ -213,14 +289,20 @@ function getAllRecipes(): array
 /**
  * Get a single recipe by slug
  */
-function getRecipeBySlug(string $slug): ?array
+function getRecipeBySlug(string $slug, bool $includeMarkdown = false): ?array
 {
-    return dbQueryOne('
-        SELECT slug, title, subtitle, category, difficulty,
-               active_time, total_time, serves, tags, content
+    $columns = 'slug, title, subtitle, category, difficulty,
+               active_time, total_time, serves, tags, content';
+
+    if ($includeMarkdown) {
+        $columns .= ', markdown';
+    }
+
+    return dbQueryOne("
+        SELECT $columns
         FROM recipes
         WHERE slug = :slug AND deleted_at IS NULL
-    ', ['slug' => $slug]);
+    ", ['slug' => $slug]);
 }
 
 /**
@@ -260,6 +342,53 @@ function createRecipe(array $data): array
 
     $stmt->execute([
         'slug' => $data['slug'],
+        'title' => $data['title'],
+        'subtitle' => $data['subtitle'],
+        'category' => $data['category'],
+        'difficulty' => $data['difficulty'],
+        'active_time' => $data['active_time'],
+        'total_time' => $data['total_time'],
+        'serves' => $data['serves'],
+        'tags' => $tagsArray,
+        'markdown' => $data['markdown'],
+        'content' => $data['content'],
+    ]);
+
+    return $stmt->fetch();
+}
+
+/**
+ * Update an existing recipe
+ */
+function updateRecipe(string $slug, array $data): array
+{
+    $pdo = getDB();
+
+    // Convert tags array to PostgreSQL array format
+    $tagsArray = '{' . implode(',', array_map(
+        fn($t) => '"' . str_replace('"', '\\"', $t) . '"',
+        $data['tags']
+    )) . '}';
+
+    $stmt = $pdo->prepare('
+        UPDATE recipes SET
+            title = :title,
+            subtitle = :subtitle,
+            category = :category,
+            difficulty = :difficulty,
+            active_time = :active_time,
+            total_time = :total_time,
+            serves = :serves,
+            tags = :tags,
+            markdown = :markdown,
+            content = :content
+        WHERE slug = :slug AND deleted_at IS NULL
+        RETURNING id, slug, title, subtitle, category, difficulty,
+                  active_time, total_time, serves, tags
+    ');
+
+    $stmt->execute([
+        'slug' => $slug,
         'title' => $data['title'],
         'subtitle' => $data['subtitle'],
         'category' => $data['category'],
