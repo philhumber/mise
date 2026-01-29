@@ -3,6 +3,7 @@
 	import { toggleTheme, getTheme } from '$lib/stores/theme';
 	import { pageTitle } from '$lib/stores/pageTitle';
 	import UploadButton from './UploadButton.svelte';
+	import WakeLockToggle from './WakeLockToggle.svelte';
 
 	let isDark = $state(getTheme() === 'dark');
 
@@ -53,6 +54,7 @@
 
 	<div class="header-actions">
 		<UploadButton />
+		<WakeLockToggle visible={$pageTitle.showBackButton} />
 
 		<button
 			class="theme-toggle"
