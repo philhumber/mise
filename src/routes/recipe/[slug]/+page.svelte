@@ -6,6 +6,7 @@
 	import EditModal from '$lib/components/EditModal.svelte';
 	import { fetchUserRecipe, fetchRecipeForEdit, checkAuth, deleteRecipe } from '$lib/api/recipes';
 	import { setPageTitle, clearPageTitle } from '$lib/stores/pageTitle';
+	import { requestWakeLock, releaseWakeLock, getWakeLockEnabled } from '$lib/stores/wakeLock';
 	import type { Recipe } from '$lib/types';
 
 	let { data } = $props();
@@ -48,10 +49,16 @@
 			}
 		}
 		fetchComplete = true;
+
+		// Auto-activate wake lock if user preference enabled
+		if (getWakeLockEnabled() && recipe && !notFound) {
+			await requestWakeLock();
+		}
 	});
 
 	onDestroy(() => {
 		clearPageTitle();
+		releaseWakeLock();
 	});
 
 	const difficultyDots = {

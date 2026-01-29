@@ -5,12 +5,14 @@
 	import '$styles/tokens.css';
 	import favicon from '$lib/assets/favicon.svg';
 	import { initTheme } from '$lib/stores/theme';
+	import { initWakeLock } from '$lib/stores/wakeLock';
 	import Header from '$lib/components/Header.svelte';
 
 	let { children } = $props();
 
 	onMount(() => {
 		initTheme();
+		initWakeLock();
 	});
 </script>
 
