@@ -18,6 +18,11 @@ Mïse (from *mise en place* — "everything in its place") is a recipe collectio
 - Responsive timeline navigation for complex recipes
 - Light/dark theme toggle
 - Upload your own recipes via markdown files
+- **Meal Planning** — Combine multiple recipes into unified meal plans
+  - Aggregated timeline showing all prep steps chronologically
+  - Combined ingredient list grouped by component
+  - Stale detection when source recipes change
+- **Wake Lock** — Keep screen awake while cooking
 
 ## Running Locally
 
@@ -93,7 +98,7 @@ For recipes with advance prep, use timeline markers in your Method section:
 3. Final plating...
 ```
 
-Available markers: `T-48h`, `T-24h`, `T-12h`, `T-4h`, `T-1h`, `Day-of`, `Service`
+Available markers: `T-48h`, `T-24h`, `T-12h`, `T-4h`, `T-90m`, `T-1h`, `Day-of`, `Service` (or any `T-Xh`/`T-Xm` format)
 
 See [docs/recipe-format.md](docs/recipe-format.md) for complete documentation.
 

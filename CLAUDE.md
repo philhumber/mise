@@ -137,16 +137,29 @@ For recipe upload functionality:
 
 ## Key Screens
 
-1. **Home/Browse** - Search bar, category pills, recipe cards
-2. **Recipe Detail** - Timeline summary, grouped ingredients, method steps
+1. **Home/Browse** - Search bar, category pills, recipe cards (hamburger menu navigation)
+2. **Recipe Detail** - Timeline summary, grouped ingredients, method steps, wake lock toggle
+3. **Meals List** - Browse saved meal plans with recipe counts and timeline spans
+4. **Meal Detail** - Aggregated timeline and ingredients across all recipes in the meal
+
+## Features
+
+### Meal Planning
+Combine multiple recipes into unified meal plans with:
+- **Aggregated Timeline** - All recipe steps merged chronologically (T-48h → Service)
+- **Combined Ingredients** - Grouped by component across all recipes
+- **Course Ordering** - Arrange recipes in serving order
+- **Stale Detection** - Flag when source recipes have been modified since meal creation
+- **Snapshot Refresh** - Regenerate meal data from current recipe versions
+
+### Wake Lock
+Keep screen awake while viewing recipes - toggle in recipe detail header.
 
 ## Roadmap Features
 
 - Step-by-step cook mode
 - Built-in timers
 - Unit conversion toggle (metric/imperial)
-- Keep screen awake toggle
-- Shopping list aggregation
 - Recipe scaling
 
 ## File Structure
@@ -156,7 +169,15 @@ api/                          # PHP backend (deployed alongside static build)
 ├── auth.php                  # Session-based authentication
 ├── config.php                # Database config (not in git)
 ├── recipes.php               # Recipe CRUD endpoints
-└── lib/                      # PHP utilities
+├── meals.php                 # Meal CRUD endpoints
+├── migrations/               # Database migrations
+│   └── 001_create_meals.sql
+└── lib/
+    ├── db.php                # Database connection
+    ├── validation.php        # Input validation
+    ├── recipe-parser.php     # Ingredient extraction
+    ├── timeline-parser.php   # Timeline aggregation
+    └── snapshot.php          # Recipe snapshot creation
 
 src/
 ├── content/
@@ -166,24 +187,31 @@ src/
 │       └── yuzu-green-tea-granite.md
 ├── lib/
 │   ├── api/
-│   │   └── recipes.ts        # API client for PHP backend
+│   │   ├── recipes.ts        # Recipe API client
+│   │   └── meals.ts          # Meal API client
 │   ├── assets/
 │   │   └── favicon.svg
 │   ├── components/
 │   │   ├── CategoryFilter.svelte
-│   │   ├── Header.svelte
+│   │   ├── Header.svelte           # Hamburger menu navigation
 │   │   ├── RecipeCard.svelte
 │   │   ├── SearchBar.svelte
 │   │   ├── Timeline.svelte
 │   │   ├── UploadButton.svelte
-│   │   └── UploadModal.svelte
+│   │   ├── UploadModal.svelte
+│   │   ├── WakeLockToggle.svelte   # Screen wake lock
+│   │   ├── MealCard.svelte         # Meal list card
+│   │   ├── MealModal.svelte        # Create/edit meal
+│   │   ├── MealTimeline.svelte     # Aggregated timeline
+│   │   └── MealIngredients.svelte  # Aggregated ingredients
 │   ├── stores/
 │   │   ├── theme.ts
-│   │   └── pageTitle.ts
+│   │   ├── pageTitle.ts
+│   │   └── wakeLock.ts       # Wake lock state
 │   ├── styles/
 │   │   └── tokens.css
 │   ├── types/
-│   │   └── index.ts
+│   │   └── index.ts          # Includes Meal types
 │   └── utils/
 │       ├── search.ts         # Fuse.js fuzzy search
 │       └── timeline.ts       # Timeline marker parsing
@@ -191,9 +219,15 @@ src/
     ├── +layout.svelte
     ├── +layout.ts
     ├── +page.svelte          # Home (search + browse)
-    └── recipe/
+    ├── recipe/
+    │   └── [slug]/
+    │       ├── +page.svelte  # Recipe detail
+    │       └── +page.ts
+    └── meals/
+        ├── +page.svelte      # Meals list
+        ├── +page.ts
         └── [slug]/
-            ├── +page.svelte  # Recipe detail
+            ├── +page.svelte  # Meal detail
             └── +page.ts
 ```
 
@@ -209,15 +243,31 @@ src/
 
 ### PHP API Endpoints
 
+**Authentication**
 | Endpoint | Method | Description |
 |----------|--------|-------------|
 | `/api/auth.php` | GET | Check auth status |
 | `/api/auth.php` | POST | Login with password |
 | `/api/auth.php` | DELETE | Logout |
+
+**Recipes**
+| Endpoint | Method | Description |
+|----------|--------|-------------|
 | `/api/recipes.php` | GET | List all user recipes |
 | `/api/recipes.php?slug=X` | GET | Get single recipe |
 | `/api/recipes.php` | POST | Upload new recipe (markdown) |
+| `/api/recipes.php?slug=X` | PUT | Update recipe |
 | `/api/recipes.php?slug=X` | DELETE | Delete recipe |
+
+**Meals**
+| Endpoint | Method | Description |
+|----------|--------|-------------|
+| `/api/meals.php` | GET | List all meals (metadata only) |
+| `/api/meals.php?slug=X` | GET | Get meal with full snapshot |
+| `/api/meals.php` | POST | Create meal from recipe slugs |
+| `/api/meals.php?slug=X` | PUT | Update meal |
+| `/api/meals.php?slug=X` | DELETE | Delete meal |
+| `/api/meals.php?slug=X&action=refresh` | POST | Refresh meal snapshot |
 
 ### Authentication
 
