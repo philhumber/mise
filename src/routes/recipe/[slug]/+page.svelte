@@ -4,9 +4,11 @@
 	import { resolve } from '$app/paths';
 	import Timeline from '$lib/components/Timeline.svelte';
 	import EditModal from '$lib/components/EditModal.svelte';
+	import IngredientGroup from '$lib/components/IngredientGroup.svelte';
 	import { fetchUserRecipe, fetchRecipeForEdit, checkAuth, deleteRecipe } from '$lib/api/recipes';
 	import { setPageTitle, clearPageTitle } from '$lib/stores/pageTitle';
 	import { requestWakeLock, releaseWakeLock, getWakeLockEnabled } from '$lib/stores/wakeLock';
+	import { parseIngredients } from '$lib/utils/ingredients';
 	import type { Recipe } from '$lib/types';
 
 	let { data } = $props();
@@ -24,6 +26,7 @@
 	let isLoadingMarkdown = $state(false);
 
 	const isLoading = $derived(!recipe && !fetchComplete);
+	const ingredientGroups = $derived(recipe ? parseIngredients(recipe.content) : []);
 
 	// Set page title when recipe changes
 	$effect.pre(() => {
@@ -173,10 +176,14 @@
 		<div class="recipe-layout">
 			<Timeline content={recipe.content} />
 
-			<article class="recipe-content">
-				<!-- eslint-disable-next-line svelte/no-at-html-tags -- content is sanitized by API or from trusted build-time files -->
-				{@html recipe.content}
-			</article>
+			<div class="recipe-main">
+				<IngredientGroup groups={ingredientGroups} />
+
+				<article class="recipe-content">
+					<!-- eslint-disable-next-line svelte/no-at-html-tags -- content is sanitized by API or from trusted build-time files -->
+					{@html recipe.content}
+				</article>
+			</div>
 		</div>
 	</div>
 {/if}
@@ -306,15 +313,32 @@
 		}
 	}
 
-	/* Recipe content markdown styling */
-	.recipe-content {
-		line-height: 1.7;
+	/* Recipe main column */
+	.recipe-main {
 		min-width: 0; /* Prevent grid blowout */
 	}
 
 	/* Only add over-scroll padding when timeline navigation exists */
-	.recipe-layout:has(:global(.timeline-desktop)) .recipe-content {
+	.recipe-layout:has(:global(.timeline-desktop)) .recipe-main {
 		padding-bottom: 70vh;
+	}
+
+	/* Recipe content markdown styling */
+	.recipe-content {
+		line-height: 1.7;
+	}
+
+	/* Hide Ingredients section from raw HTML (rendered separately by IngredientGroup) */
+	.recipe-content :global(h2#ingredients),
+	.recipe-content :global(h2#ingredients ~ h3:not([id^='t-']):not(#day-of):not(#service)),
+	.recipe-content :global(h2#ingredients ~ ul) {
+		display: none;
+	}
+
+	/* Stop hiding at the Method section */
+	.recipe-content :global(h2#method),
+	.recipe-content :global(h2#method ~ *) {
+		display: block;
 	}
 
 	.recipe-content :global(h2) {
@@ -496,5 +520,28 @@
 
 	.btn-danger:hover:not(:disabled) {
 		background: #b91c1c;
+	}
+
+	/* ===== Method Section with Timeline Border ===== */
+
+	/* Method ordered lists get subtle timeline styling */
+	.recipe-content :global(h2#method ~ ol) {
+		position: relative;
+		padding-left: var(--spacing-2xl);
+		border-left: 2px solid var(--color-border);
+		margin-left: var(--spacing-xs);
+	}
+
+	/* Method step items */
+	.recipe-content :global(h2#method ~ ol li) {
+		margin-bottom: var(--spacing-xl);
+	}
+
+	/* Timeline section headings (T-24h, Day-of, Service) */
+	.recipe-content :global(h3[id^='t-']),
+	.recipe-content :global(h3#day-of),
+	.recipe-content :global(h3#service) {
+		color: var(--color-accent);
+		margin-top: var(--spacing-3xl);
 	}
 </style>
