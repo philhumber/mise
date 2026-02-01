@@ -80,17 +80,28 @@ Tips, variations, or storage instructions.
 
 For multi-component recipes with advance prep, use timeline markers. **Important:** Markers must match exactly between the Timeline section and Method headings for navigation to work.
 
-#### Canonical Markers
+#### Timeline Markers
 
-| Marker    | Use Case                | Generated Anchor ID |
-| --------- | ----------------------- | ------------------- |
-| `T-48h`   | 48 hours before service | `t-48h`             |
-| `T-24h`   | 24 hours before service | `t-24h`             |
-| `T-12h`   | 12 hours before service | `t-12h`             |
-| `T-4h`    | 4 hours before service  | `t-4h`              |
-| `T-1h`    | 1 hour before service   | `t-1h`              |
-| `Day-of`  | Morning of service      | `day-of`            |
-| `Service` | Final plating steps     | `service`           |
+Any time-based marker is supported. Use the format that best fits your recipe:
+
+| Format | Examples | Use Case |
+|--------|----------|----------|
+| `T-Xh` | `T-48h`, `T-24h`, `T-2h` | Hours before service |
+| `T-Xm` | `T-90m`, `T-30m` | Minutes before service |
+| `Day-of` | `Day-of` | Morning of service day |
+| `Service` | `Service` | Final plating/assembly |
+
+**Common markers:**
+- `T-48h` - 2 days ahead
+- `T-24h` - 1 day ahead
+- `T-12h` - Morning prep (day before dinner service)
+- `T-4h` - Afternoon prep
+- `T-90m` - 90 minutes before
+- `T-1h` - 1 hour before
+- `Day-of` - Morning of service
+- `Service` - Final plating
+
+Markers are automatically sorted chronologically (earliest first, Service last).
 
 #### Timeline Section Format
 
@@ -237,6 +248,142 @@ Content-Type: multipart/form-data
   images?: File[]       // Optional image uploads
 }
 ```
+
+## Meal Planning Compatible Format
+
+For recipes to work correctly in meal planning (aggregated timelines and ingredients), follow this **exact** structure.
+
+### The Golden Rules
+
+1. **Use `## Ingredients`** (title case) - not `## INGREDIENTS` or `## ingredients`
+2. **Use `### Component Name`** for ingredient groups - not `**Bold**` headers
+3. **Use `## Method`** (title case) for the method section
+4. **Use `### T-XXh` or `### Day-of` or `### Service`** for timeline sections within Method
+5. **Number all steps** with `1.`, `2.`, etc.
+6. **Bold the step title** followed by a period: `1. **Step Title.** Instructions...`
+
+### Fool-Proof Template
+
+```markdown
+---
+title: 'Recipe Title'
+subtitle: 'Optional subtitle'
+category: main
+difficulty: intermediate
+active_time: '45 min'
+total_time: '24h'
+serves: 4
+tags: [tag1, tag2]
+---
+
+## Timeline
+
+- **T-24h** Brief description of advance prep
+- **Day-of** Brief description of day-of prep
+- **Service** Brief description of final steps
+
+## Ingredients
+
+### Component One
+
+- 200g ingredient one
+- 100ml ingredient two
+
+### Component Two
+
+- 1 item, prepared
+- 50g another ingredient
+
+### To Finish
+
+- Garnish items
+- Finishing elements
+
+## Method
+
+### T-24h
+
+1. **First Step Title.** Detailed instructions for the first step. Include temperatures, times, and visual cues.
+
+2. **Second Step Title.** More instructions here.
+
+### Day-of
+
+3. **Third Step Title.** Continue numbering sequentially across all timeline sections.
+
+4. **Fourth Step Title.** Instructions continue.
+
+### Service
+
+5. **Plating Step.** Final assembly and plating instructions.
+
+## Notes
+
+- Storage tips
+- Variations
+- Wine pairing suggestions
+```
+
+### What NOT to Do
+
+| ❌ Don't | ✅ Do Instead |
+|----------|---------------|
+| `## INGREDIENTS` | `## Ingredients` |
+| `**Miso Cure**` as component header | `### Miso Cure` |
+| `## ingredients` | `## Ingredients` |
+| `### Method (T – 24 h)` | `### T-24h` |
+| `## The Method` | `## Method` |
+| Unnumbered steps | `1.`, `2.`, `3.` etc. |
+| `1. Step title: instructions` | `1. **Step Title.** Instructions` |
+
+### Simple Recipe (No Timeline)
+
+For simple recipes without multi-day prep, omit the Timeline section and timeline headers in Method:
+
+```markdown
+---
+title: 'Quick Recipe'
+category: drink
+difficulty: easy
+active_time: '5 min'
+total_time: '5 min'
+serves: 1
+tags: [quick]
+---
+
+## Ingredients
+
+### Base
+
+- 240ml water
+- 15ml citrus juice
+
+### Optional Additions
+
+- Mint leaves
+- Ginger
+
+## Method
+
+1. **Combine Ingredients.** Mix all base ingredients in a container.
+
+2. **Add Ice.** Add ice and shake well.
+
+3. **Serve.** Pour and serve immediately.
+
+## Notes
+
+- Adjust sweetness to taste.
+```
+
+When included in a meal plan, recipes without timeline markers will have all their steps grouped under **T-1h**.
+
+### Component Naming Best Practices
+
+- Use descriptive names: `### Miso Cure` not `### Part 1`
+- Keep names concise: `### Pickled Cucumber` not `### For the Quick-Pickled Cucumber Component`
+- Use title case: `### Charred Bok Choy` not `### charred bok choy`
+- Common useful names: `Main`, `Sauce`, `Garnish`, `To Finish`, `Assembly`
 
 ## Examples
 

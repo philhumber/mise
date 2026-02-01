@@ -192,3 +192,53 @@ function ensureUniqueSlug(string $baseSlug, callable $existsCheck): string
 
     return $slug;
 }
+
+// Meal slug character set (no vowels to avoid bad words, no ambiguous chars)
+const MEAL_SLUG_CHARS = 'bcdfghjkmnpqrstvwxyz23456789';
+
+/**
+ * Generate a unique meal slug: title-slug-xxxxxx
+ * Keeps the 'user-' prefix from generateSlug() for consistency
+ *
+ * @param string $title
+ * @return string
+ */
+function generateMealSlug(string $title): string
+{
+    $base = generateSlug($title); // Returns 'user-title-here' format
+
+    $guid = '';
+    $charsetLength = strlen(MEAL_SLUG_CHARS);
+    for ($i = 0; $i < 6; $i++) {
+        $guid .= MEAL_SLUG_CHARS[random_int(0, $charsetLength - 1)];
+    }
+
+    return $base . '-' . $guid;
+}
+
+/**
+ * Generate slug with collision retry
+ *
+ * @param string $title
+ * @param int $maxRetries
+ * @return string
+ */
+function ensureUniqueMealSlug(string $title, int $maxRetries = 5): string
+{
+    require_once __DIR__ . '/db.php';
+
+    for ($i = 0; $i < $maxRetries; $i++) {
+        $slug = generateMealSlug($title);
+        $exists = dbQueryOne(
+            "SELECT 1 FROM meals WHERE slug = :slug AND deleted_at IS NULL",
+            ['slug' => $slug]
+        );
+        if (!$exists) {
+            return $slug;
+        }
+    }
+
+    // Fallback: use timestamp-based suffix
+    $base = generateSlug($title);
+    return $base . '-' . substr(md5(microtime()), 0, 6);
+}

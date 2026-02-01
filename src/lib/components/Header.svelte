@@ -1,20 +1,59 @@
 <script lang="ts">
 	import { base } from '$app/paths';
+	import { page } from '$app/stores';
 	import { toggleTheme, getTheme } from '$lib/stores/theme';
 	import { pageTitle } from '$lib/stores/pageTitle';
 	import UploadButton from './UploadButton.svelte';
 	import WakeLockToggle from './WakeLockToggle.svelte';
 
 	let isDark = $state(getTheme() === 'dark');
+	let menuOpen = $state(false);
+
+	// Navigation state
+	const isMealsActive = $derived($page.url.pathname.startsWith(`${base}/meals`));
+	const isRecipesActive = $derived(!isMealsActive);
 
 	function handleToggle() {
 		const newTheme = toggleTheme();
 		isDark = newTheme === 'dark';
 	}
+
+	function toggleMenu() {
+		menuOpen = !menuOpen;
+	}
+
+	function closeMenu() {
+		menuOpen = false;
+	}
+
+	function handleKeydown(event: KeyboardEvent) {
+		if (event.key === 'Escape' && menuOpen) {
+			closeMenu();
+		}
+	}
 </script>
+
+<svelte:window onkeydown={handleKeydown} />
 
 <header class="header">
 	<div class="header-left">
+		<!-- Hamburger menu button -->
+		<button
+			class="menu-toggle"
+			class:menu-toggle--hidden={$pageTitle.showBackButton}
+			onclick={toggleMenu}
+			aria-label={menuOpen ? 'Close menu' : 'Open menu'}
+			aria-expanded={menuOpen}
+		>
+			<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="menu-icon">
+				{#if menuOpen}
+					<path d="M18 6 6 18M6 6l12 12"></path>
+				{:else}
+					<path d="M3 12h18M3 6h18M3 18h18"></path>
+				{/if}
+			</svg>
+		</button>
+
 		<!-- Back button (recipe detail) - always rendered, visibility controlled via CSS -->
 		<!-- eslint-disable-next-line svelte/no-navigation-without-resolve -- using base for non-parameterized route -->
 		<a
@@ -91,6 +130,37 @@
 	</div>
 </header>
 
+<!-- Slide-out navigation menu -->
+<!-- svelte-ignore a11y_click_events_have_key_events -->
+<!-- svelte-ignore a11y_no_static_element_interactions -->
+{#if menuOpen}
+	<div class="menu-overlay" onclick={closeMenu}></div>
+{/if}
+<nav class="slide-menu" class:slide-menu--open={menuOpen}>
+	<div class="menu-header">
+		<span class="menu-title text-logo">mïse</span>
+	</div>
+	<div class="menu-links">
+		<!-- eslint-disable-next-line svelte/no-navigation-without-resolve -- using base for non-parameterized route -->
+		<a href={base || '/'} class="menu-link" class:active={isRecipesActive} onclick={closeMenu}>
+			<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="menu-link-icon">
+				<path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
+				<path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path>
+			</svg>
+			Recipes
+		</a>
+		<!-- eslint-disable-next-line svelte/no-navigation-without-resolve -- using base for non-parameterized route -->
+		<a href="{base}/meals" class="menu-link" class:active={isMealsActive} onclick={closeMenu}>
+			<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="menu-link-icon">
+				<path d="M3 2v7c0 1.1.9 2 2 2h4a2 2 0 0 0 2-2V2"></path>
+				<path d="M7 2v20"></path>
+				<path d="M21 15V2v0a5 5 0 0 0-5 5v6c0 1.1.9 2 2 2h3Zm0 0v7"></path>
+			</svg>
+			Meals
+		</a>
+	</div>
+</nav>
+
 <style>
 	.header {
 		display: flex;
@@ -107,6 +177,137 @@
 		min-width: 0;
 		flex: 1;
 		position: relative;
+	}
+
+	/* ========================================
+	   Hamburger Menu Toggle
+	   ======================================== */
+
+	.menu-toggle {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		width: 44px;
+		height: 44px;
+		padding: 0;
+		margin-right: var(--spacing-sm);
+		color: var(--color-text-secondary);
+		background: transparent;
+		border: none;
+		border-radius: var(--radius-md);
+		cursor: pointer;
+		flex-shrink: 0;
+		transition:
+			color var(--transition-fast),
+			opacity var(--transition-fast),
+			width var(--transition-fast),
+			margin var(--transition-fast);
+	}
+
+	.menu-toggle:hover {
+		color: var(--color-text-primary);
+	}
+
+	.menu-toggle--hidden {
+		width: 0;
+		margin-right: 0;
+		opacity: 0;
+		overflow: hidden;
+		pointer-events: none;
+	}
+
+	.menu-icon {
+		width: 24px;
+		height: 24px;
+		flex-shrink: 0;
+	}
+
+	/* ========================================
+	   Slide-out Menu
+	   ======================================== */
+
+	.menu-overlay {
+		position: fixed;
+		inset: 0;
+		background: rgba(0, 0, 0, 0.4);
+		z-index: 998;
+		animation: fadeIn 0.2s ease-out;
+	}
+
+	@keyframes fadeIn {
+		from {
+			opacity: 0;
+		}
+		to {
+			opacity: 1;
+		}
+	}
+
+	.slide-menu {
+		position: fixed;
+		top: 0;
+		left: 0;
+		bottom: 0;
+		width: 280px;
+		max-width: 80vw;
+		background: var(--color-surface);
+		border-right: 1px solid var(--color-border);
+		z-index: 999;
+		transform: translateX(-100%);
+		transition: transform 0.25s ease-out;
+		display: flex;
+		flex-direction: column;
+	}
+
+	.slide-menu--open {
+		transform: translateX(0);
+	}
+
+	.menu-header {
+		padding: var(--spacing-lg) var(--spacing-xl);
+		border-bottom: 1px solid var(--color-border);
+	}
+
+	.menu-title {
+		color: var(--color-text-primary);
+	}
+
+	.menu-links {
+		display: flex;
+		flex-direction: column;
+		padding: var(--spacing-md) 0;
+	}
+
+	.menu-link {
+		display: flex;
+		align-items: center;
+		gap: var(--spacing-md);
+		padding: var(--spacing-md) var(--spacing-xl);
+		font-family: var(--font-body);
+		font-size: 1rem;
+		font-weight: 500;
+		color: var(--color-text-secondary);
+		text-decoration: none;
+		transition:
+			color 0.2s,
+			background 0.2s;
+		min-height: 48px;
+	}
+
+	.menu-link:hover {
+		color: var(--color-text-primary);
+		background: var(--color-bg);
+	}
+
+	.menu-link.active {
+		color: var(--color-accent);
+		background: var(--color-bg);
+	}
+
+	.menu-link-icon {
+		width: 20px;
+		height: 20px;
+		flex-shrink: 0;
 	}
 
 	/* ========================================
