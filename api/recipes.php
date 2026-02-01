@@ -181,6 +181,10 @@ function handleDelete(): void
     // Delete the recipe
     deleteRecipeBySlug($slug);
 
+    // Mark meals containing this recipe as stale and mark recipe deleted
+    markMealsContainingRecipeStale($slug);
+    markRecipeDeletedInMeals($slug);
+
     sendJson(['success' => true, 'message' => 'Recipe deleted']);
 }
 
@@ -245,6 +249,9 @@ function handlePut(): void
         'markdown' => $data['markdown'],
         'content' => $sanitizedHtml,
     ]);
+
+    // Mark meals containing this recipe as stale
+    markMealsContainingRecipeStale($slug);
 
     sendJson([
         'success' => true,
@@ -413,6 +420,78 @@ function deleteRecipeBySlug(string $slug): void
         'UPDATE recipes SET deleted_at = NOW() WHERE slug = :slug AND deleted_at IS NULL',
         ['slug' => $slug]
     );
+}
+
+// === MEAL STALENESS HOOKS ===
+
+/**
+ * Mark all meals containing a recipe as stale
+ * Called after recipe update or delete
+ */
+function markMealsContainingRecipeStale(string $recipeSlug): void
+{
+    // Validate slug format to prevent JSON injection
+    if (!preg_match('/^[a-z0-9-]+$/', $recipeSlug)) {
+        error_log("Invalid slug format for marking meals stale: $recipeSlug");
+        return;
+    }
+
+    try {
+        dbExecute("
+            UPDATE meals
+            SET is_stale = TRUE, updated_at = NOW()
+            WHERE snapshot->'recipes' @> :search::jsonb
+            AND deleted_at IS NULL
+        ", ['search' => json_encode([['slug' => $recipeSlug]])]);
+    } catch (Exception $e) {
+        // Log but don't fail the recipe operation
+        error_log("Failed to mark meals stale for recipe $recipeSlug: " . $e->getMessage());
+    }
+}
+
+/**
+ * Mark a recipe as deleted in all meal snapshots
+ * Called after recipe soft delete
+ */
+function markRecipeDeletedInMeals(string $recipeSlug): void
+{
+    // Validate slug format to prevent JSON injection
+    if (!preg_match('/^[a-z0-9-]+$/', $recipeSlug)) {
+        error_log("Invalid slug format for marking recipe deleted in meals: $recipeSlug");
+        return;
+    }
+
+    try {
+        // Find all meals containing this recipe
+        $meals = dbQueryAll("
+            SELECT id, slug, snapshot FROM meals
+            WHERE snapshot->'recipes' @> :search::jsonb
+            AND deleted_at IS NULL
+        ", ['search' => json_encode([['slug' => $recipeSlug]])]);
+
+        foreach ($meals as $meal) {
+            $snapshot = json_decode($meal['snapshot'], true);
+
+            // Mark the recipe as deleted in snapshot
+            foreach ($snapshot['recipes'] as &$recipe) {
+                if ($recipe['slug'] === $recipeSlug) {
+                    $recipe['is_deleted'] = true;
+                }
+            }
+
+            // Update meal
+            dbExecute("
+                UPDATE meals
+                SET snapshot = :snapshot, is_stale = TRUE, updated_at = NOW()
+                WHERE id = :id
+            ", [
+                'id' => $meal['id'],
+                'snapshot' => json_encode($snapshot),
+            ]);
+        }
+    } catch (Exception $e) {
+        error_log("Failed to mark recipe deleted in meals for $recipeSlug: " . $e->getMessage());
+    }
 }
 
 /**

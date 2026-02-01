@@ -87,19 +87,18 @@ serves: 2
 tags: [seafood, sous-vide, make-ahead]
 ```
 
-### Timeline Markers (Canonical)
+### Timeline Markers
 
-| Marker    | Use Case                |
-| --------- | ----------------------- |
-| `T-48h`   | 48 hours before service |
-| `T-24h`   | 24 hours before service |
-| `T-12h`   | 12 hours before service |
-| `T-4h`    | 4 hours before service  |
-| `T-1h`    | 1 hour before service   |
-| `Day-of`  | Morning of service      |
-| `Service` | Final plating steps     |
+Flexible time-based markers are supported:
 
-See `docs/recipe-format.md` for full timeline documentation.
+| Format | Examples | Use Case |
+|--------|----------|----------|
+| `T-Xh` | `T-48h`, `T-24h`, `T-2h` | Hours before service |
+| `T-Xm` | `T-90m`, `T-30m` | Minutes before service |
+| `Day-of` | | Morning of service |
+| `Service` | | Final plating steps |
+
+Markers are automatically sorted chronologically. See `docs/recipe-format.md` for full documentation.
 
 ## Tech Stack
 

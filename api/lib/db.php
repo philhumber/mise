@@ -87,3 +87,35 @@ function dbLastInsertId(?string $name = null): string
 {
     return getDB()->lastInsertId($name);
 }
+
+/**
+ * Begin a database transaction
+ */
+function dbBeginTransaction(): void
+{
+    getDB()->beginTransaction();
+}
+
+/**
+ * Commit the current transaction
+ */
+function dbCommit(): void
+{
+    getDB()->commit();
+}
+
+/**
+ * Roll back the current transaction
+ */
+function dbRollback(): void
+{
+    getDB()->rollBack();
+}
+
+/**
+ * Check if currently in a transaction
+ */
+function dbInTransaction(): bool
+{
+    return getDB()->inTransaction();
+}

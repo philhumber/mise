@@ -4,6 +4,7 @@
 **Target User:** Serious home cooks planning dinner parties and complex multi-day preparations
 **Date:** 2026-01-29
 **Status:** Planning Complete - Ready for Implementation
+**Last Revised:** 2026-02-01 (Deep-dive review completed)
 
 ## Vision
 
@@ -56,14 +57,20 @@ A cook planning a three-course dinner party can:
 - Reduces API calls, handles deleted recipes gracefully
 
 ```sql
+-- Prerequisite: recipes table must exist
+
 CREATE TABLE meals (
-  id UUID PRIMARY KEY,
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  slug VARCHAR(128) NOT NULL UNIQUE,
   title VARCHAR(255) NOT NULL,
   description TEXT,
   snapshot JSONB NOT NULL,
-  created_at TIMESTAMP,
-  updated_at TIMESTAMP
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+  updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
+
+CREATE INDEX idx_meals_created_at ON meals(created_at DESC);
+CREATE INDEX idx_meals_snapshot ON meals USING GIN (snapshot jsonb_path_ops);
 ```
 
 **Snapshot Structure:**
@@ -122,21 +129,27 @@ CREATE TABLE meals (
 
 ### Timeline Markers (Canonical)
 
-**Chronological order:**
-1. `T-48h` - 48 hours before service
-2. `T-24h` - 24 hours before service
-3. `T-8h` - Day of service (morning)
-4. `T-4h` - 4 hours before service
-5. `T-1h` - 1 hour before service
-6. `Service` - Final plating
+Per CLAUDE.md, use these 7 canonical markers in chronological order:
+
+| Marker | Hours Before | Use Case |
+|--------|--------------|----------|
+| `T-48h` | 48 | 48 hours before service |
+| `T-24h` | 24 | 24 hours before service |
+| `T-12h` | 12 | 12 hours before service |
+| `T-4h` | 4 | 4 hours before service |
+| `T-1h` | 1 | 1 hour before service |
+| `Day-of` | ~8 | Morning of service |
+| `Service` | 0 | Final plating steps |
 
 **Normalization Rules:**
 - Non-standard markers round UP to nearest canonical marker
 - Examples:
   - T-6h → T-4h
-  - T-17h → T-8h (Day-of)
+  - T-17h → T-12h
   - T-31h → T-24h
   - T-2h → T-1h
+  - "DAY OF (MORNING)" → Day-of
+  - "T – 48 HOURS" → T-48h (case-insensitive, whitespace-tolerant)
 - Recipes without timeline markers default to `Service`
 - Only show markers that have content (hide empty markers)
 
@@ -226,11 +239,13 @@ Course 1: ~~Deleted Recipe~~ (Original Title if available)
 
 ### PHP Endpoints
 
+All routes use `?slug=X` for consistency with recipes.php pattern.
+
 ```
 GET  /api/meals.php
-  → List all meals (id, title, description, created_at, updated_at)
+  → List all meals (slug, title, description, recipe_count, timeline_span, created_at)
 
-GET  /api/meals.php?id=X
+GET  /api/meals.php?slug=X
   → Get full meal with snapshot
   → Returns complete snapshot for rendering (single call, no additional recipe fetches)
 
@@ -240,25 +255,28 @@ POST /api/meals.php
     description?: string,
     recipe_slugs: string[]  // Order = course order
   }
-  → Create meal
+  → Create meal (requires auth)
+  → Validates all recipe_slugs exist and are not deleted
   → Generates snapshot from recipes
   → Returns meal with full snapshot
 
-PUT  /api/meals.php?id=X
+PUT  /api/meals.php?slug=X
   Body: {
     title?: string,
     description?: string,
     recipe_slugs?: string[]  // Update course order
   }
-  → Update meal
+  → Update meal (requires auth)
   → Regenerates snapshot if recipes changed
 
-DELETE /api/meals.php?id=X
-  → Delete meal
+DELETE /api/meals.php?slug=X
+  → Delete meal (requires auth)
 
-POST /api/meals.php?id=X&action=refresh
-  → Force refresh snapshot (manual trigger if needed)
+POST /api/meals.php?slug=X&action=refresh
+  → Force refresh snapshot (requires auth)
 ```
+
+**Error Handling:** If any recipe fails to parse during snapshot generation, fail the entire operation (no partial saves).
 
 ### Recipe Hooks (New)
 
@@ -269,7 +287,7 @@ Add to existing `recipes.php`:
 function onRecipeUpdated($slug) {
   $meals = findMealsContainingRecipe($slug);
   foreach ($meals as $meal) {
-    regenerateSnapshot($meal['id']);
+    regenerateSnapshot($meal['slug']);
   }
 }
 
@@ -277,8 +295,16 @@ function onRecipeUpdated($slug) {
 function onRecipeDeleted($slug) {
   $meals = findMealsContainingRecipe($slug);
   foreach ($meals as $meal) {
-    markRecipeDeletedInSnapshot($meal['id'], $slug);
+    markRecipeDeletedInSnapshot($meal['slug'], $slug);
   }
+}
+
+// JSONB query to find meals containing a recipe
+function findMealsContainingRecipe($slug) {
+  return dbQueryAll("
+    SELECT id, slug FROM meals
+    WHERE snapshot @> jsonb_build_array(jsonb_build_object('slug', :slug))::jsonb
+  ", ['slug' => $slug]);
 }
 ```
 
@@ -312,28 +338,31 @@ function onRecipeDeleted($slug) {
 - Timeline span: "Starts T-24h" or "Same-day meal"
 - Created date
 
-### 2. Create Meal Modal
+### 2. Create/Edit Meal Modal
 
-**Triggered by:** "New Meal" button
+**Component:** Single `MealModal.svelte` with `mode: 'create' | 'edit'` prop
+
+**Triggered by:** "New Meal" button (create) or "Edit" button on detail page (edit)
 
 **Flow:**
-1. Enter title (required)
+1. Enter title (required, validation error if empty)
 2. Enter description (optional)
-3. Multi-select recipe picker
-   - Grid of recipe cards with checkboxes
+3. Two-panel recipe picker (RecipePicker component)
+   - **Left panel:** Grid of available recipe cards with checkboxes
+   - **Right panel:** Ordered list with drag handles for reordering + remove buttons
    - Filter to user-added recipes only
-   - Selection order = course order (show numbered badges)
    - Minimum 1 recipe required
-4. Submit → Generate snapshot → Navigate to meal detail
+4. Submit → Generate snapshot → Navigate to meal detail (create) or reload (edit)
 
 **UX details:**
-- Visual feedback for selected recipes (highlight + number badge)
-- Can reorder by clicking again (cycles through positions)
-- "Create Meal" button disabled until title + ≥1 recipe
+- Drag-drop to reorder courses in right panel
+- Course numbers update in real-time as list is reordered
+- "Save" button disabled until title + ≥1 recipe
+- Loading state during API call
 
-### 3. Meal Detail Page (`/meal/[slug]`)
+### 3. Meal Detail Page (`/meals/[slug]`)
 
-**URL format:** `/meal/sunday-dinner-a3f9k2`
+**URL format:** `/meals/sunday-dinner-a3f9k2`
 
 **Sections:**
 
@@ -406,23 +435,7 @@ Per-component view:
 - If no markers: "No timeline information available"
 - Markers without steps are hidden
 
-### 4. Edit Meal Flow
-
-**Triggered by:** Edit button on meal detail
-
-**Modal contains:**
-- Title input
-- Description textarea
-- Recipe list with drag handles for reordering
-- "Add Recipe" button (opens multi-select picker)
-- Remove recipe buttons (X icon on each)
-
-**UX details:**
-- Drag-drop to reorder courses
-- Course numbers update in real-time
-- Save → Regenerate snapshot → Reload page
-
-### 5. Navigation Integration
+### 4. Navigation Integration
 
 **Add to Header component:**
 - New "Meals" tab (alongside existing nav)
@@ -494,6 +507,65 @@ Per-component view:
 - Don't save partial data
 - Allow retry
 
+## PHP Library Functions
+
+### ingredients.php
+
+```php
+/**
+ * Extract ingredients from recipe markdown/HTML content
+ * Parses ## INGREDIENTS section with ### Component subsections
+ *
+ * @return array<string, string[]> Component name => ingredient strings
+ */
+function extractIngredientsFromContent(string $content): array
+
+/**
+ * Parse an ingredient string into structured data
+ * Handles formats from existing recipes:
+ * - "2 fresh cod loin portions, skin on (230g each)" → qty=2, item=cod loin portions
+ * - "Fine sea salt: 6g" → item=Fine sea salt, qty=6, unit=g (colon format)
+ * - "Agar powder: 1.2–1.5g (0.8–1%)" → range with notes
+ * - "Salt to taste" → unparseable, keep as-is
+ */
+function parseIngredient(string $line): array
+
+/**
+ * Aggregate ingredients across all recipes
+ * Combine ONLY if: same item (case-insensitive) + same unit + no qualifier/prep differences
+ */
+function aggregateIngredients(array $recipeIngredients): array
+```
+
+### timeline.php
+
+```php
+/**
+ * Extract timeline steps from ## METHOD BY TIMELINE section
+ * Parses ### Timeline Marker subsections with numbered steps
+ *
+ * @return array<string, array<string, string[]>> Marker => Component => Steps
+ */
+function extractTimelineFromContent(string $content): array
+
+/**
+ * Normalize a non-standard marker to nearest canonical (round UP)
+ * "T – 48 HOURS" → T-48h, "DAY OF (MORNING)" → Day-of, "T-6h" → T-4h
+ */
+function normalizeTimelineMarker(string $marker): string
+```
+
+### snapshot.php
+
+```php
+/**
+ * Generate a meal snapshot from recipe slugs
+ * Fetches each recipe, extracts ingredients/timeline, aggregates
+ * Throws SnapshotGenerationException on any failure
+ */
+function generateMealSnapshot(array $recipeSlugs): array
+```
+
 ## File Structure
 
 ```
@@ -511,19 +583,193 @@ src/lib/
 │   ├── MealCard.svelte           # NEW: Meal preview card
 │   ├── MealTimeline.svelte       # NEW: Timeline accordion view
 │   ├── MealIngredients.svelte    # NEW: Ingredient list with toggle
-│   ├── MealModal.svelte          # NEW: Create/edit meal modal
-│   ├── RecipePicker.svelte       # NEW: Multi-select recipe grid
-│   └── Header.svelte             # MODIFIED: Add Meals nav tab
+│   ├── MealModal.svelte          # NEW: Create/edit meal modal (single component with mode prop)
+│   ├── RecipePicker.svelte       # NEW: Two-panel drag-drop recipe selector
+│   └── Header.svelte             # MODIFIED: Add Meals nav tab with route detection
 ├── types/
-│   └── index.ts                  # MODIFIED: Add Meal types
+│   └── index.ts                  # MODIFIED: Add Meal types (with exports)
 └── routes/
     └── meals/
         ├── +page.svelte          # NEW: Meal list page
+        ├── +page.ts              # NEW: prerender = false (required for static adapter)
         └── [slug]/
-            └── +page.svelte      # NEW: Meal detail page
+            ├── +page.svelte      # NEW: Meal detail page
+            └── +page.ts          # NEW: prerender = false, load function
 
 docs/
 └── meal-planning-feature.md      # THIS FILE
+```
+
+## TypeScript Types
+
+Add to `src/lib/types/index.ts` (all types must be exported):
+
+```typescript
+export interface AggregatedIngredient {
+  display: string;
+  breakdown: IngredientBreakdown[];
+}
+
+export interface IngredientBreakdown {
+  component: string;
+  recipe: string;
+  qty: string;
+}
+
+export interface RecipeSnapshot {
+  slug: string;
+  course_order: number;
+  title: string;
+  subtitle?: string;
+  metadata: {
+    serves: number;
+    active_time: string;
+    total_time: string;
+    category: RecipeCategory;
+    difficulty: Difficulty;
+  };
+  components: string[];
+  ingredients: Record<string, string[]>;  // Raw strings, not parsed objects
+  timeline: Record<string, Record<string, string[]>>;
+  is_deleted: boolean;
+}
+
+export interface MealSnapshot {
+  recipes: RecipeSnapshot[];
+  aggregated_ingredients: AggregatedIngredient[];
+  timeline_markers: string[];
+  last_snapshot_at: string;
+}
+
+export interface MealMeta {
+  id: string;
+  slug: string;
+  title: string;
+  description?: string;
+  recipe_count: number;
+  timeline_span: string;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface Meal extends MealMeta {
+  snapshot: MealSnapshot;
+}
+```
+
+## API Client (meals.ts)
+
+Create `src/lib/api/meals.ts` following the pattern from `recipes.ts`:
+
+```typescript
+import { base } from '$app/paths';
+import type { Meal, MealMeta, MealSnapshot } from '$lib/types';
+
+const API_BASE = `${base}/api`;
+
+// Transformation functions (following recipes.ts pattern)
+function transformMealMeta(data: Record<string, unknown>): MealMeta {
+  return {
+    id: String(data.id),
+    slug: String(data.slug),
+    title: String(data.title),
+    description: data.description ? String(data.description) : undefined,
+    recipe_count: Number(data.recipe_count),
+    timeline_span: String(data.timeline_span),
+    created_at: String(data.created_at),
+    updated_at: String(data.updated_at),
+  };
+}
+
+function transformMeal(data: Record<string, unknown>): Meal {
+  return {
+    ...transformMealMeta(data),
+    snapshot: data.snapshot as MealSnapshot,
+  };
+}
+
+// API functions
+export async function fetchMeals(): Promise<MealMeta[]>
+export async function fetchMeal(slug: string): Promise<Meal | null>
+export async function createMeal(data: {
+  title: string;
+  description?: string;
+  recipe_slugs: string[];
+}): Promise<{ success: boolean; meal?: Meal; errors?: ValidationError[] }>
+export async function updateMeal(slug: string, data: {
+  title?: string;
+  description?: string;
+  recipe_slugs?: string[];
+}): Promise<{ success: boolean; meal?: Meal; errors?: ValidationError[] }>
+export async function deleteMeal(slug: string): Promise<boolean>
+export async function refreshMealSnapshot(slug: string): Promise<Meal | null>
+```
+
+## Implementation Notes
+
+### MealModal (Single Component)
+
+Use a single `MealModal.svelte` with a `mode` prop instead of separate create/edit components:
+
+```typescript
+interface Props {
+  open: boolean;
+  mode: 'create' | 'edit';
+  meal?: Meal;  // Required when mode='edit'
+  onClose: () => void;
+  onSuccess: (meal: Meal) => void;
+}
+```
+
+### RecipePicker (Two-Panel Drag-Drop)
+
+Two-panel layout for better UX:
+1. **Left panel:** Grid of available recipe cards with checkboxes
+2. **Right panel:** Ordered list of selected recipes with drag handles and remove buttons
+
+Course order = position in the selected list.
+
+### MealTimeline Accordion
+
+No existing accordion pattern in codebase. Implement with Svelte 5 state:
+
+```typescript
+let expandedMarkers = $state(new Set<string>(['Service']));
+let expandedComponents = $state(new Set<string>());
+
+function toggleMarker(marker: string) {
+  const newSet = new Set(expandedMarkers);
+  if (newSet.has(marker)) {
+    newSet.delete(marker);
+  } else {
+    newSet.add(marker);
+  }
+  expandedMarkers = newSet;
+}
+```
+
+### Header Navigation
+
+Route detection using `$page` store:
+
+```typescript
+import { page } from '$app/stores';
+
+const isRecipesActive = $derived(
+  $page.url.pathname === `${base}/` ||
+  $page.url.pathname.startsWith(`${base}/recipe`)
+);
+const isMealsActive = $derived(
+  $page.url.pathname.startsWith(`${base}/meals`)
+);
+```
+
+### Static Adapter Configuration
+
+Both meal route pages need `+page.ts` with:
+
+```typescript
+export const prerender = false;  // Required for dynamic routes with static adapter
 ```
 
 ## Implementation Task Breakdown
@@ -704,9 +950,36 @@ Feature is complete when:
 | Search integration? | Not in v1 |
 | Slug format? | `title-slug-a3f9k2` (6-char GUID) |
 | Recipe sources? | User recipes only (bundled removed later) |
+| Modal design? | Single MealModal with mode prop |
+| Recipe ordering UX? | Two-panel drag-drop |
+| Snapshot generation failure? | Fail entire operation, no partial saves |
+
+## Verification Checklist
+
+After implementation, verify each of these works correctly:
+
+1. **Database:** Run migration, verify table with `\d meals`
+2. **Ingredient parsing:** Test with kombu-cod-recipe.md edge cases:
+   - `Fine sea salt: 6g` → colon format parses correctly
+   - `1.2–1.5g agar powder` → range parses correctly
+   - `Salt to taste` → marked as unparseable, displayed as-is
+3. **Timeline normalization:** Verify:
+   - `T – 48 HOURS` → T-48h
+   - `DAY OF (MORNING)` → Day-of
+   - T-6h → T-4h (round up)
+4. **API:** Test CRUD via curl, verify auth requirements enforced
+5. **UI:** Create meal → verify timeline/ingredients display correctly
+6. **Edit flow:** Reorder courses with drag-drop → verify snapshot updates
+7. **Delete handling:** Delete a recipe → verify placeholder appears in meal
+8. **Navigation:** Verify tab highlighting on all route combinations:
+   - `/` → Recipes active
+   - `/recipe/[slug]` → Recipes active
+   - `/meals` → Meals active
+   - `/meals/[slug]` → Meals active
+9. **Static build:** Run `npm run build` → verify no prerender errors
 
 ---
 
-**Document Version:** 1.0
-**Last Updated:** 2026-01-29
+**Document Version:** 1.1
+**Last Updated:** 2026-02-01
 **Implementation Status:** Ready to build

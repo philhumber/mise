@@ -47,6 +47,21 @@ tags: [tag1, tag2, tag3]      # Non-empty array, at least one tag
 - Protein: seafood, beef, chicken, pork, vegetarian
 - Season: summer, fall, winter, spring
 
+### MEAL PLANNING COMPATIBILITY (CRITICAL)
+
+For recipes to work correctly in the meal planning feature, you MUST follow these rules exactly:
+
+| ❌ DON'T | ✅ DO |
+|----------|-------|
+| `## INGREDIENTS` | `## Ingredients` |
+| `## ingredients` | `## Ingredients` |
+| `**Miso Cure**` as component header | `### Miso Cure` |
+| `## METHOD` | `## Method` |
+| `## Instructions` | `## Method` |
+| `### Method (T – 24 h)` | `### T-24h` |
+| Unnumbered steps | `1.`, `2.`, `3.` etc. |
+| `1. Step title: instructions` | `1. **Step Title.** Instructions` |
+
 ### CONTENT STRUCTURE
 
 After frontmatter, organize content with these sections (use exactly these H2 headings):
@@ -62,14 +77,17 @@ After frontmatter, organize content with these sections (use exactly these H2 he
 - **Service** Final plating
 ```
 
-**Timeline Markers (use these EXACTLY):**
-- `T-48h` - 48 hours before service
-- `T-24h` - 24 hours before service
-- `T-12h` - 12 hours before service
-- `T-4h` - 4 hours before service
-- `T-1h` - 1 hour before service
+**Timeline Markers (flexible format):**
+
+Use any time-based marker that fits your recipe:
+- `T-Xh` format: `T-48h`, `T-24h`, `T-12h`, `T-4h`, `T-2h`, `T-1h` (hours)
+- `T-Xm` format: `T-90m`, `T-30m`, `T-15m` (minutes)
 - `Day-of` - Morning of service day
 - `Service` - Final plating/assembly
+
+Common markers: `T-48h`, `T-24h`, `T-12h`, `T-4h`, `T-90m`, `T-1h`, `Day-of`, `Service`
+
+Markers are automatically sorted chronologically in meal plans.
 
 **Rules:**
 - Bold the marker: `**T-24h**` not `T-24h`
@@ -82,18 +100,25 @@ After frontmatter, organize content with these sections (use exactly these H2 he
 ```markdown
 ## Ingredients
 
-### Component Name (if recipe has multiple components)
+### Component Name
 
 - 2 fresh cod loin portions (230g each)
 - 6g fine sea salt
 - 1/4 tsp sugar
+
+### Another Component
+
+- 100ml olive oil
+- 30g parsley
 ```
 
-**Rules:**
-- Use H3 (`###`) for component groups if recipe has multiple parts
-- For simple recipes, skip groups and list ingredients directly
+**CRITICAL Rules for Meal Planning Compatibility:**
+- **ALWAYS use `## Ingredients`** (title case) - not `## INGREDIENTS` or `## ingredients`
+- **ALWAYS use `### Component Name`** headers for grouping - **NOT `**Bold**` headers**
+- Use H3 (`###`) for ALL component groups, even for simple recipes with one group (use `### Main` or a descriptive name)
 - Be specific with quantities and units
 - Include brand names or quality notes when relevant (e.g., "fresh cod", "fine sea salt")
+- Common component names: `Main`, `Sauce`, `Garnish`, `To Finish`, `Assembly`, or descriptive names like `Miso Cure`, `Pickled Cucumber`
 
 #### 3. Method Section (required)
 
@@ -106,6 +131,8 @@ For simple recipes (no timeline):
 
 2. **Next Step.** More instructions...
 ```
+
+**Note:** Simple recipes without timeline markers will have all their steps grouped under **T-1h** in meal plans.
 
 For multi-day recipes (with timeline):
 
@@ -127,11 +154,12 @@ For multi-day recipes (with timeline):
 4. **Plate.** Spoon emulsion onto warm plates...
 ```
 
-**Method Rules:**
-- Number steps sequentially (1, 2, 3...) across ALL timeline sections
-- Bold the step title: `1. **Title.** Instructions...`
-- If using timeline markers, H3 headings MUST exactly match canonical markers
-- Use H3 (`###`) for timeline headings in Method
+**CRITICAL Method Rules for Meal Planning Compatibility:**
+- **ALWAYS use `## Method`** (title case) - not `## METHOD` or `## Instructions`
+- **ALWAYS number steps** with `1.`, `2.`, `3.` etc.
+- **ALWAYS bold the step title** followed by a period: `1. **Step Title.** Instructions...`
+- For timeline recipes, use **exactly** `### T-24h`, `### Day-of`, `### Service` etc. (not `### T-24 Hours` or `### Method (T – 24 h)`)
+- Number steps sequentially across ALL timeline sections
 - Be specific with temperatures, times, and techniques
 - Include target doneness, visual cues, or other indicators of completion
 
@@ -193,12 +221,14 @@ Before providing the final output, verify:
 - [ ] serves is a positive integer (no quotes, no decimal)
 - [ ] tags is an array with at least one tag
 
-**Content:**
-- [ ] H2 sections use proper markdown: `## Ingredients` (not `# Ingredients`)
-- [ ] If Timeline section exists, all markers are bolded: `**T-24h**`
+**Content (Meal Planning Compatibility):**
+- [ ] Ingredients section uses exactly `## Ingredients` (title case)
+- [ ] ALL ingredient groups use `### Component Name` headers (NOT `**Bold**`)
+- [ ] Method section uses exactly `## Method` (title case)
 - [ ] Method steps are numbered sequentially (1, 2, 3...)
 - [ ] Each method step has bold title: `1. **Title.** Instructions...`
-- [ ] If using timeline Method sections, H3 headings match Timeline markers exactly
+- [ ] If Timeline section exists, all markers are bolded: `**T-24h**`
+- [ ] If using timeline Method sections, H3 headings are exactly: `### T-24h`, `### Day-of`, `### Service` etc.
 - [ ] Timeline markers (if used) are from canonical list only
 
 **Quality:**

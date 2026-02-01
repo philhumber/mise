@@ -47,3 +47,64 @@ export interface TimelineItem {
 	/** Anchor ID for linking to method section (e.g., "t-48h") */
 	anchorId: string;
 }
+
+// === VALIDATION ===
+
+export interface ValidationError {
+	field: string;
+	message: string;
+}
+
+// === MEAL TYPES ===
+
+export interface AggregatedIngredient {
+	display: string;
+	breakdown: IngredientBreakdown[];
+}
+
+export interface IngredientBreakdown {
+	component: string;
+	recipe: string;
+	qty: string;
+}
+
+export interface RecipeSnapshot {
+	slug: string;
+	course_order: number;
+	title: string;
+	subtitle?: string;
+	metadata: {
+		serves: number;
+		active_time: string;
+		total_time: string;
+		category: RecipeCategory;
+		difficulty: Difficulty;
+	};
+	components: string[];
+	ingredients: Record<string, string[]>;
+	timeline: Record<string, Record<string, string[]>>;
+	is_deleted: boolean;
+}
+
+export interface MealSnapshot {
+	recipes: RecipeSnapshot[];
+	aggregated_ingredients: AggregatedIngredient[];
+	timeline_markers: string[];
+	last_snapshot_at: string;
+}
+
+export interface MealMeta {
+	id: number;
+	slug: string;
+	title: string;
+	description?: string;
+	recipe_count: number;
+	timeline_span: string;
+	is_stale: boolean;
+	created_at: string;
+	updated_at: string;
+}
+
+export interface Meal extends MealMeta {
+	snapshot: MealSnapshot;
+}
