@@ -5,10 +5,13 @@
 	import Timeline from '$lib/components/Timeline.svelte';
 	import EditModal from '$lib/components/EditModal.svelte';
 	import IngredientGroup from '$lib/components/IngredientGroup.svelte';
+	import CookMode from '$lib/components/CookMode.svelte';
 	import { fetchUserRecipe, fetchRecipeForEdit, checkAuth, deleteRecipe } from '$lib/api/recipes';
 	import { setPageTitle, clearPageTitle } from '$lib/stores/pageTitle';
 	import { requestWakeLock, releaseWakeLock, getWakeLockEnabled } from '$lib/stores/wakeLock';
+	import { enterCookMode } from '$lib/stores/cookMode';
 	import { parseIngredients } from '$lib/utils/ingredients';
+	import { parseSteps } from '$lib/utils/steps';
 	import type { Recipe } from '$lib/types';
 
 	let { data } = $props();
@@ -27,6 +30,7 @@
 
 	const isLoading = $derived(!recipe && !fetchComplete);
 	const ingredientGroups = $derived(recipe ? parseIngredients(recipe.content) : []);
+	const methodSteps = $derived(recipe ? parseSteps(recipe.content) : []);
 
 	// Set page title when recipe changes
 	$effect.pre(() => {
@@ -110,6 +114,12 @@
 			}
 		}
 	}
+
+	function handleStartCooking() {
+		if (methodSteps.length > 0) {
+			enterCookMode(methodSteps);
+		}
+	}
 </script>
 
 {#if isLoading}
@@ -128,8 +138,19 @@
 {:else}
 	<div class="recipe-detail">
 		<div class="recipe-header">
-			{#if isAuthenticated}
-				<div class="ghost-actions">
+			<div class="header-actions">
+				{#if methodSteps.length > 0}
+					<button
+						class="ghost-btn"
+						onclick={handleStartCooking}
+						aria-label="Start cooking"
+					>
+						<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+							<polygon points="5 3 19 12 5 21 5 3"></polygon>
+						</svg>
+					</button>
+				{/if}
+				{#if isAuthenticated}
 					<button
 						class="ghost-btn"
 						onclick={handleEditClick}
@@ -150,8 +171,8 @@
 							<path d="M3 6h18M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2M10 11v6M14 11v6" />
 						</svg>
 					</button>
-				</div>
-			{/if}
+				{/if}
+			</div>
 
 			<p class="recipe-meta">
 				<span class="meta-value">{recipe.active_time}</span> active
@@ -223,6 +244,9 @@
 	</div>
 {/if}
 
+<!-- Cook mode overlay -->
+<CookMode />
+
 <style>
 	.recipe-detail {
 		max-width: 800px;
@@ -251,7 +275,7 @@
 	.recipe-header {
 		position: relative;
 		margin-bottom: var(--spacing-lg);
-		padding-right: 80px; /* Space for ghost actions */
+		padding-right: 120px; /* Space for header actions (3 buttons) */
 	}
 
 	.recipe-meta {
@@ -400,8 +424,8 @@
 		color: var(--color-text-primary);
 	}
 
-	/* Ghost action buttons - top right */
-	.ghost-actions {
+	/* Header action buttons - top right */
+	.header-actions {
 		position: absolute;
 		top: 0;
 		right: 0;
