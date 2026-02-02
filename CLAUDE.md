@@ -138,9 +138,10 @@ For recipe upload functionality:
 ## Key Screens
 
 1. **Home/Browse** - Search bar, category pills, recipe cards (hamburger menu navigation)
-2. **Recipe Detail** - Timeline summary, grouped ingredients, method steps, wake lock toggle
-3. **Meals List** - Browse saved meal plans with recipe counts and timeline spans
-4. **Meal Detail** - Aggregated timeline and ingredients across all recipes in the meal
+2. **Recipe Detail** - Timeline summary, grouped ingredients, method steps, wake lock toggle, cook mode button
+3. **Cook Mode** - Full-screen step-by-step cooking interface with navigation and text size controls
+4. **Meals List** - Browse saved meal plans with recipe counts and timeline spans
+5. **Meal Detail** - Aggregated timeline and ingredients across all recipes in the meal
 
 ## Features
 
@@ -155,10 +156,17 @@ Combine multiple recipes into unified meal plans with:
 ### Wake Lock
 Keep screen awake while viewing recipes - toggle in recipe detail header.
 
+### Cook Mode
+Full-screen, step-by-step cooking interface designed for kitchen use:
+- **Step Navigation** - Previous/Next buttons and arrow key support
+- **Large Readable Text** - Adjustable text size (A-/A+ controls)
+- **Progress Tracking** - Visual progress bar and step counter
+- **Auto Wake Lock** - Screen stays awake during cooking
+- **Timeline Markers** - Displays current step's timeline context
+
 ## Roadmap Features
 
-- Step-by-step cook mode
-- Built-in timers
+- Built-in timers (MISE-68)
 - Unit conversion toggle (metric/imperial)
 - Recipe scaling
 
@@ -204,19 +212,25 @@ src/
 │   │   ├── MealCard.svelte         # Meal list card
 │   │   ├── MealModal.svelte        # Create/edit meal
 │   │   ├── MealTimeline.svelte     # Aggregated timeline
-│   │   └── MealIngredients.svelte  # Aggregated ingredients
+│   │   ├── MealIngredients.svelte  # Aggregated ingredients
+│   │   ├── CookMode.svelte         # Cook mode overlay shell
+│   │   ├── CookModeHeader.svelte   # Cook mode header with controls
+│   │   ├── CookModeStep.svelte     # Single step display
+│   │   └── CookModeTimerArea.svelte # Timer area placeholder
 │   ├── stores/
 │   │   ├── theme.ts
 │   │   ├── pageTitle.ts
-│   │   └── wakeLock.ts       # Wake lock state
+│   │   ├── wakeLock.ts       # Wake lock state
+│   │   └── cookMode.ts       # Cook mode state
 │   ├── styles/
 │   │   └── tokens.css
 │   ├── types/
-│   │   └── index.ts          # Includes Meal types
+│   │   └── index.ts          # Includes Meal, CookModeStep types
 │   └── utils/
 │       ├── ingredients.ts    # Ingredient group parser
 │       ├── search.ts         # Fuse.js fuzzy search
-│       └── timeline.ts       # Timeline marker parsing
+│       ├── timeline.ts       # Timeline marker parsing
+│       └── steps.ts          # Cook mode step parser
 └── routes/
     ├── +layout.svelte
     ├── +layout.ts

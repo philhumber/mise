@@ -48,6 +48,22 @@ export interface TimelineItem {
 	anchorId: string;
 }
 
+/**
+ * Cook mode step parsed from recipe method section
+ */
+export interface CookModeStep {
+	/** Step number (1, 2, 3...) */
+	number: number;
+	/** Timeline marker in display format ("T – 24 HOURS", "SERVICE", "T – 1 HOUR") */
+	marker: string;
+	/** Step title extracted from bold text */
+	title: string;
+	/** Plain text body (HTML tags stripped) */
+	body: string;
+	/** Original HTML content for rich display */
+	htmlContent: string;
+}
+
 // === VALIDATION ===
 
 export interface ValidationError {
