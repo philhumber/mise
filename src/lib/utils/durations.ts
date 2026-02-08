@@ -59,11 +59,13 @@ function parseRangeNumber(text: string): number | null {
  * Detect cooking durations in natural language text
  *
  * @param text - Plain text from a recipe step (HTML stripped)
+ * @param stepTitle - Optional step title used as primary label source
  * @returns Array of detected durations with labels
  */
-export function detectDurations(text: string): DetectedDuration[] {
+export function detectDurations(text: string, stepTitle?: string): DetectedDuration[] {
 	if (!text) return [];
 
+	const label = extractLabel(stepTitle, text);
 	const results: DetectedDuration[] = [];
 	const seen = new Set<number>(); // deduplicate by start index
 
@@ -78,7 +80,6 @@ export function detectDurations(text: string): DetectedDuration[] {
 		if (minUnit) {
 			const seconds = hours * 3600 + mins * minUnit;
 			if (seconds > 0 && seconds <= 86400) {
-				const label = extractLabel(text, match.index);
 				results.push({ seconds, label, matchedText: match[0] });
 				seen.add(match.index);
 			}
@@ -96,7 +97,6 @@ export function detectDurations(text: string): DetectedDuration[] {
 		if (num && multiplier) {
 			const seconds = num * multiplier;
 			if (seconds > 0 && seconds <= 86400) {
-				const label = extractLabel(text, match.index);
 				results.push({ seconds, label, matchedText: match[0] });
 				seen.add(match.index);
 			}
@@ -107,18 +107,27 @@ export function detectDurations(text: string): DetectedDuration[] {
 }
 
 /**
- * Extract a contextual label for the timer by looking for action verbs
- * near the matched duration in the text
+ * Extract a contextual label for the timer.
+ * Priority: action verb in title → action verb in body → "Timer"
  */
-function extractLabel(text: string, matchIndex: number): string {
-	// Look at the 80 characters before the match for an action verb
-	const prefix = text.slice(Math.max(0, matchIndex - 80), matchIndex);
-	const verbMatch = prefix.match(ACTION_VERBS);
-	if (verbMatch) {
-		// Capitalize first letter
-		const verb = verbMatch[1];
+function extractLabel(stepTitle: string | undefined, bodyText: string): string {
+	// 1. Action verb from step title
+	if (stepTitle) {
+		const titleMatch = stepTitle.match(ACTION_VERBS);
+		if (titleMatch) {
+			const verb = titleMatch[1];
+			return verb.charAt(0).toUpperCase() + verb.slice(1).toLowerCase();
+		}
+	}
+
+	// 2. Action verb from body text
+	const bodyMatch = bodyText.match(ACTION_VERBS);
+	if (bodyMatch) {
+		const verb = bodyMatch[1];
 		return verb.charAt(0).toUpperCase() + verb.slice(1).toLowerCase();
 	}
+
+	// 3. Generic fallback
 	return 'Timer';
 }
 

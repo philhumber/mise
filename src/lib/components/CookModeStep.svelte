@@ -16,7 +16,7 @@
 
 	let { step, scale = 1 }: Props = $props();
 
-	const durations = $derived(detectDurations(step.body));
+	const durations = $derived(detectDurations(step.body, step.title));
 
 	function handleStartTimer(label: string, seconds: number) {
 		createTimer(label, seconds, step.number);
