@@ -4,6 +4,9 @@
 	Exit button, marker badge, step counter, progress bar, and text size controls.
 -->
 <script lang="ts">
+	import { onMount, onDestroy } from 'svelte';
+	import { subscribeMuted, subscribeMuteReminder, toggleMuted } from '$lib/utils/notifications';
+
 	interface Props {
 		marker: string;
 		currentStep: number;
@@ -19,6 +22,27 @@
 	let { marker, currentStep, totalSteps, canIncreaseText, canDecreaseText, runningTimerCount, onExit, onIncreaseText, onDecreaseText }: Props = $props();
 
 	const progress = $derived(totalSteps > 0 ? ((currentStep) / totalSteps) * 100 : 0);
+
+	let muted = $state(false);
+	let muteReminder = $state(false);
+	let unsubMuted: (() => void) | null = null;
+	let unsubReminder: (() => void) | null = null;
+	let reminderTimeout: ReturnType<typeof setTimeout> | null = null;
+
+	onMount(() => {
+		unsubMuted = subscribeMuted((m) => { muted = m; });
+		unsubReminder = subscribeMuteReminder(() => {
+			muteReminder = true;
+			if (reminderTimeout) clearTimeout(reminderTimeout);
+			reminderTimeout = setTimeout(() => { muteReminder = false; }, 2000);
+		});
+	});
+
+	onDestroy(() => {
+		if (unsubMuted) unsubMuted();
+		if (unsubReminder) unsubReminder();
+		if (reminderTimeout) clearTimeout(reminderTimeout);
+	});
 </script>
 
 <header class="cook-mode-header">
@@ -57,8 +81,30 @@
 			<span class="step-counter">Step {currentStep} of {totalSteps}</span>
 		</div>
 
-		<!-- Right: text size controls -->
-		<div class="text-size-controls">
+		<!-- Right: sound toggle + text size controls -->
+		<div class="header-controls">
+			<button
+				class="size-btn"
+				class:muted-btn={muted}
+				class:mute-reminder={muteReminder}
+				onclick={toggleMuted}
+				aria-label={muted ? 'Unmute timer alerts' : 'Mute timer alerts'}
+			>
+				{#if muted}
+					<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+						<polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+						<line x1="23" y1="9" x2="17" y2="15"></line>
+						<line x1="17" y1="9" x2="23" y2="15"></line>
+					</svg>
+				{:else}
+					<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+						<polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+						<path d="M19.07 4.93a10 10 0 0 1 0 14.14"></path>
+						<path d="M15.54 8.46a5 5 0 0 1 0 7.07"></path>
+					</svg>
+				{/if}
+			</button>
+			<div class="controls-divider"></div>
 			<button
 				class="size-btn"
 				onclick={onDecreaseText}
@@ -166,9 +212,38 @@
 		color: var(--color-text-tertiary);
 	}
 
-	.text-size-controls {
+	.header-controls {
 		display: flex;
+		align-items: center;
 		gap: var(--spacing-xs);
+	}
+
+	.controls-divider {
+		width: 1px;
+		height: 20px;
+		background-color: var(--color-border);
+		margin: 0 var(--spacing-xs);
+	}
+
+	.muted-btn {
+		opacity: 0.5;
+	}
+
+	.mute-reminder {
+		opacity: 1;
+		color: var(--color-accent);
+		animation: mute-nudge 0.4s ease-in-out 3;
+	}
+
+	@keyframes mute-nudge {
+		0%, 100% { transform: scale(1); }
+		50% { transform: scale(1.15); }
+	}
+
+	@media (prefers-reduced-motion: reduce) {
+		.mute-reminder {
+			animation: none;
+		}
 	}
 
 	.size-btn {

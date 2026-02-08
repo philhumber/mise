@@ -15,6 +15,7 @@
 		createTimer
 	} from '$lib/stores/timers';
 	import { parseDurationInput } from '$lib/utils/durations';
+	import { subscribeMuted } from '$lib/utils/notifications';
 	import type { Timer } from '$lib/types';
 
 	interface Props {
@@ -24,20 +25,24 @@
 	let { currentStepNumber }: Props = $props();
 
 	let timers = $state<Timer[]>([]);
+	let isMuted = $state(false);
 	let showAddForm = $state(false);
 	let customMinutes = $state('');
 	let customLabel = $state('');
 
-	let unsubscribe: (() => void) | null = null;
+	let unsubTimers: (() => void) | null = null;
+	let unsubMuted: (() => void) | null = null;
 
 	onMount(() => {
-		unsubscribe = subscribeTimers((t) => {
+		unsubTimers = subscribeTimers((t) => {
 			timers = t;
 		});
+		unsubMuted = subscribeMuted((m) => { isMuted = m; });
 	});
 
 	onDestroy(() => {
-		if (unsubscribe) unsubscribe();
+		if (unsubTimers) unsubTimers();
+		if (unsubMuted) unsubMuted();
 	});
 
 	const hasTimers = $derived(timers.length > 0);
@@ -78,6 +83,7 @@
 			{#each sortedTimers as timer (timer.id)}
 				<TimerCard
 					{timer}
+					muted={isMuted}
 					onPause={pauseTimer}
 					onResume={resumeTimer}
 					onDismiss={dismissTimer}

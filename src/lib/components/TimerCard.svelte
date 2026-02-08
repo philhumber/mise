@@ -10,12 +10,13 @@
 
 	interface Props {
 		timer: Timer;
+		muted: boolean;
 		onPause: (id: string) => void;
 		onResume: (id: string) => void;
 		onDismiss: (id: string) => void;
 	}
 
-	let { timer, onPause, onResume, onDismiss }: Props = $props();
+	let { timer, muted, onPause, onResume, onDismiss }: Props = $props();
 
 	const isCompleted = $derived(timer.state === 'completed');
 	const isPaused = $derived(timer.state === 'paused');
@@ -35,11 +36,16 @@
 		<span class="timer-step">Step {timer.stepNumber}</span>
 	</div>
 
-	<div class="timer-time" aria-live="polite">
-		{#if isCompleted}
-			<span class="timer-done">Done</span>
-		{:else}
-			{formatTime(timer.remainingSeconds)}
+	<div class="timer-time-col">
+		<div class="timer-time" aria-live="polite">
+			{#if isCompleted}
+				<span class="timer-done">Done</span>
+			{:else}
+				{formatTime(timer.remainingSeconds)}
+			{/if}
+		</div>
+		{#if muted && isRunning}
+			<span class="timer-muted-hint">Sound off</span>
 		{/if}
 	</div>
 
@@ -142,12 +148,26 @@
 		color: var(--color-text-tertiary);
 	}
 
+	.timer-time-col {
+		display: flex;
+		flex-direction: column;
+		align-items: flex-end;
+		gap: 2px;
+	}
+
 	.timer-time {
 		font-family: var(--font-body);
 		font-size: 20px;
 		font-weight: 600;
 		font-variant-numeric: tabular-nums;
 		color: var(--color-text-primary);
+		white-space: nowrap;
+	}
+
+	.timer-muted-hint {
+		font-family: var(--font-body);
+		font-size: var(--font-size-small);
+		color: var(--color-text-tertiary);
 		white-space: nowrap;
 	}
 

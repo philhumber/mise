@@ -164,10 +164,9 @@ Full-screen, step-by-step cooking interface designed for kitchen use:
 - **Auto Wake Lock** - Screen stays awake during cooking
 - **Timeline Markers** - Displays current step's timeline context
 - **Integrated Timers** - Auto-detected durations from step text with quick-start buttons, manual timer creation, multiple concurrent timers, pause/resume, visual completion (pulsing)
+- **Timer Notifications** - Audio chime (Web Audio API) and vibration on timer completion, with mute toggle in header
 
 ## Roadmap Features
-
-- Timer notifications - audio/vibration alerts (MISE-69)
 - Unit conversion toggle (metric/imperial)
 - Recipe scaling
 
@@ -234,7 +233,8 @@ src/
 │       ├── search.ts         # Fuse.js fuzzy search
 │       ├── timeline.ts       # Timeline marker parsing
 │       ├── steps.ts          # Cook mode step parser
-│       └── durations.ts      # Duration detection + formatting
+│       ├── durations.ts      # Duration detection + formatting
+│       └── notifications.ts  # Timer audio chime + vibration alerts
 └── routes/
     ├── +layout.svelte
     ├── +layout.ts

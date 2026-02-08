@@ -7,6 +7,7 @@
  */
 
 import type { Timer, TimerState } from '$lib/types';
+import { startTimerAlert, stopTimerAlert, stopAllAlerts, triggerMuteReminder } from '$lib/utils/notifications';
 
 let timers: Timer[] = [];
 let tickInterval: ReturnType<typeof setInterval> | null = null;
@@ -60,6 +61,7 @@ export function createTimer(label: string, durationSeconds: number, stepNumber: 
 
 	timers = [...timers, timer];
 	ensureTickRunning();
+	triggerMuteReminder();
 	notifySubscribers();
 	return id;
 }
@@ -94,12 +96,14 @@ export function resumeTimer(id: string): void {
 }
 
 export function dismissTimer(id: string): void {
+	stopTimerAlert(id);
 	timers = timers.filter((t) => t.id !== id);
 	stopTickIfIdle();
 	notifySubscribers();
 }
 
 export function deleteAllTimers(): void {
+	stopAllAlerts();
 	timers = [];
 	stopTick();
 	notifySubscribers();
@@ -125,6 +129,7 @@ function tickTimers(): void {
 		changed = true;
 
 		if (remaining <= 0) {
+			startTimerAlert(t.id);
 			return { ...t, remainingSeconds: 0, state: 'completed' as TimerState };
 		}
 		return { ...t, remainingSeconds: remaining };
