@@ -57,7 +57,7 @@
 		<!-- Back button (recipe detail) - always rendered, visibility controlled via CSS -->
 		<!-- eslint-disable-next-line svelte/no-navigation-without-resolve -- using base for non-parameterized route -->
 		<a
-			href={base || '/'}
+			href={$pageTitle.backUrl || base || '/'}
 			class="back-link"
 			class:back-link--visible={$pageTitle.showBackButton}
 			aria-label="Back to recipes"

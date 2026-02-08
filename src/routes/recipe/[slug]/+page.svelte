@@ -8,7 +8,9 @@
 	import CookMode from '$lib/components/CookMode.svelte';
 	import { fetchUserRecipe, fetchRecipeForEdit, checkAuth, deleteRecipe } from '$lib/api/recipes';
 	import { setPageTitle, clearPageTitle } from '$lib/stores/pageTitle';
+	import { getMealReferrer, clearMealReferrer } from '$lib/stores/mealViewState';
 	import { requestWakeLock, releaseWakeLock, getWakeLockEnabled } from '$lib/stores/wakeLock';
+	import { base } from '$app/paths';
 	import { enterCookMode } from '$lib/stores/cookMode';
 	import { parseIngredients } from '$lib/utils/ingredients';
 	import { parseSteps } from '$lib/utils/steps';
@@ -32,17 +34,25 @@
 	const ingredientGroups = $derived(recipe ? parseIngredients(recipe.content) : []);
 	const methodSteps = $derived(recipe ? parseSteps(recipe.content) : []);
 
+	// Store meal referrer for back navigation (read once, used throughout component lifecycle)
+	let mealBackUrl = $state<string | null>(null);
+
 	// Set page title when recipe changes
 	$effect.pre(() => {
 		if (recipe) {
-			setPageTitle(recipe.title, recipe.subtitle || null);
+			setPageTitle(recipe.title, recipe.subtitle || null, true, mealBackUrl);
 		} else {
 			// Show back button immediately while loading
-			setPageTitle(null, null);
+			setPageTitle(null, null, true, mealBackUrl);
 		}
 	});
 
 	onMount(async () => {
+		// Read meal referrer once at mount (must be done client-side)
+		const mealReferrer = getMealReferrer();
+		if (mealReferrer) {
+			mealBackUrl = `${base}/meals/${mealReferrer}`;
+		}
 		// Check auth status
 		isAuthenticated = await checkAuth();
 
@@ -65,6 +75,7 @@
 
 	onDestroy(() => {
 		clearPageTitle();
+		clearMealReferrer();
 		releaseWakeLock();
 	});
 
