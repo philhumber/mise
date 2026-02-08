@@ -3,11 +3,13 @@
 
 	let { snapshot }: { snapshot: MealSnapshot } = $props();
 
-	// Track expanded state - use $state.raw with immutable updates
-	// to prevent unwanted reactivity coupling
-	let expandedMarkers = $state.raw<Record<string, boolean>>(
-		Object.fromEntries(snapshot.timeline_markers.map((m) => [m, true]))
+	// Compute default expanded markers (all expanded)
+	const defaultExpandedMarkers = Object.fromEntries(
+		snapshot.timeline_markers.map((m) => [m, true])
 	);
+
+	// Track expanded state - all markers expanded by default, all components collapsed
+	let expandedMarkers = $state.raw<Record<string, boolean>>(defaultExpandedMarkers);
 	let expandedComponents = $state.raw<Record<string, boolean>>({});
 
 	function toggleMarker(event: MouseEvent, marker: string) {
@@ -44,7 +46,7 @@
 		for (const recipe of snapshot.recipes) {
 			if (recipe.is_deleted) continue;
 
-			const markerData = recipe.timeline[marker];
+			const markerData = recipe.timeline?.[marker];
 			if (!markerData) continue;
 
 			for (const [component, steps] of Object.entries(markerData)) {

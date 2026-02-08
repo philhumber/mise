@@ -3,7 +3,7 @@
 
 	let { snapshot }: { snapshot: MealSnapshot } = $props();
 
-	// Track which recipes are expanded - all collapsed by default
+	// Track which recipes are expanded (all collapsed by default)
 	let expandedRecipes = $state.raw<Record<string, boolean>>({});
 
 	function toggleRecipe(event: MouseEvent, slug: string) {
@@ -56,7 +56,7 @@
 		<p class="empty">No ingredients found</p>
 	{:else}
 		{#each recipeGroups as group}
-			<section class="recipe-section">
+			<section class="recipe-section" id="recipe-{group.recipe.slug}">
 				<button class="recipe-header" onclick={(e) => toggleRecipe(e, group.recipe.slug)}>
 					<span class="recipe-name">{group.recipe.title}</span>
 					<span class="chevron" class:expanded={expandedRecipes[group.recipe.slug]}>&#9660;</span>
@@ -96,6 +96,7 @@
 	.recipe-section {
 		border-left: 3px solid var(--color-border);
 		margin-bottom: var(--spacing-sm);
+		scroll-margin-top: var(--spacing-xl);
 	}
 
 	.recipe-header {

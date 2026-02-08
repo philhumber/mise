@@ -5,10 +5,12 @@
 	import { fetchMeal, deleteMeal, refreshMealSnapshot } from '$lib/api/meals';
 	import { checkAuth } from '$lib/api/recipes';
 	import { setPageTitle, clearPageTitle } from '$lib/stores/pageTitle';
+	import { setMealReferrer } from '$lib/stores/mealViewState';
 	import type { Meal } from '$lib/types';
 	import MealModal from '$lib/components/MealModal.svelte';
 	import MealTimeline from '$lib/components/MealTimeline.svelte';
 	import MealIngredients from '$lib/components/MealIngredients.svelte';
+	import MealCourseNav from '$lib/components/MealCourseNav.svelte';
 
 	let { data } = $props();
 
@@ -65,6 +67,19 @@
 		meal = updatedMeal;
 		showEditModal = false;
 	}
+
+	// Handle click on a course link
+	function handleRecipeClick(event: MouseEvent, recipeSlug: string) {
+		event.preventDefault();
+		navigateToRecipe(recipeSlug);
+	}
+
+	// Navigate to a recipe, setting referrer for back button
+	function navigateToRecipe(recipeSlug: string) {
+		if (!meal) return;
+		setMealReferrer(meal.slug);
+		goto(`${base}/recipe/${recipeSlug}`);
+	}
 </script>
 
 <div class="meal-detail">
@@ -110,33 +125,51 @@
 			{/if}
 		</header>
 
-		<!-- Course Overview -->
-		<section class="courses-section">
-			<h2>Courses</h2>
-			<ol class="course-list">
-				{#each meal.snapshot.recipes as recipe (recipe.slug)}
-					<li class:deleted={recipe.is_deleted}>
-						{#if recipe.is_deleted}
-							<span class="deleted-label">Deleted</span>
-						{/if}
-						<span class="course-title">{recipe.title}</span>
-						{#if recipe.subtitle}
-							<span class="course-subtitle">{recipe.subtitle}</span>
-						{/if}
-					</li>
-				{/each}
-			</ol>
-		</section>
+		<!-- Layout with sidebar navigation -->
+		<div class="meal-layout">
+			<MealCourseNav snapshot={meal.snapshot} onRecipeNavigate={navigateToRecipe} />
 
-		<!-- Ingredients -->
-		<section class="ingredients-section">
-			<MealIngredients snapshot={meal.snapshot} />
-		</section>
+			<div class="meal-main">
+				<!-- Course Overview -->
+				<section class="courses-section">
+					<h2>Courses</h2>
+					<ol class="course-list">
+						{#each meal.snapshot.recipes as recipe (recipe.slug)}
+							<li class:deleted={recipe.is_deleted}>
+								{#if recipe.is_deleted}
+									<span class="deleted-label">Deleted</span>
+									<span class="course-title">{recipe.title}</span>
+									{#if recipe.subtitle}
+										<span class="course-subtitle">{recipe.subtitle}</span>
+									{/if}
+								{:else}
+									<a
+										href="{base}/recipe/{recipe.slug}"
+										class="course-link"
+										onclick={(e) => handleRecipeClick(e, recipe.slug)}
+									>
+										<span class="course-title">{recipe.title}</span>
+										{#if recipe.subtitle}
+											<span class="course-subtitle">{recipe.subtitle}</span>
+										{/if}
+									</a>
+								{/if}
+							</li>
+						{/each}
+					</ol>
+				</section>
 
-		<!-- Timeline -->
-		<section class="timeline-section">
-			<MealTimeline snapshot={meal.snapshot} />
-		</section>
+				<!-- Ingredients -->
+				<section class="ingredients-section">
+					<MealIngredients snapshot={meal.snapshot} />
+				</section>
+
+				<!-- Timeline -->
+				<section class="timeline-section">
+					<MealTimeline snapshot={meal.snapshot} />
+				</section>
+			</div>
+		</div>
 	{/if}
 </div>
 
@@ -154,6 +187,29 @@
 		max-width: 900px;
 		margin: 0 auto;
 		padding: var(--spacing-xl);
+	}
+
+	@media (min-width: 768px) {
+		.meal-detail {
+			max-width: 1100px; /* 200px sidebar + 40px gap + 860px content */
+		}
+	}
+
+	/* Layout grid for sidebar + main content */
+	.meal-layout {
+		display: grid;
+		gap: var(--spacing-2xl);
+	}
+
+	@media (min-width: 768px) {
+		.meal-layout {
+			grid-template-columns: 200px 1fr;
+			gap: var(--spacing-3xl);
+		}
+	}
+
+	.meal-main {
+		min-width: 0; /* Prevent grid blowout */
 	}
 
 	.loading,
@@ -304,5 +360,20 @@
 
 	.course-subtitle::before {
 		content: ' — ';
+	}
+
+	.course-link {
+		display: inline;
+		text-decoration: none;
+		color: inherit;
+		transition: color 0.2s;
+	}
+
+	.course-link:hover {
+		color: var(--color-accent);
+	}
+
+	.course-link:hover .course-title {
+		text-decoration: underline;
 	}
 </style>
