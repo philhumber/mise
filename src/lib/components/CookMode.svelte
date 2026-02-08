@@ -17,7 +17,8 @@
 		increaseTextSize,
 		decreaseTextSize
 	} from '$lib/stores/cookMode';
-	import type { CookModeStep as CookModeStepType } from '$lib/types';
+	import { subscribeTimers } from '$lib/stores/timers';
+	import type { CookModeStep as CookModeStepType, Timer } from '$lib/types';
 
 	const TEXT_SIZES = [0.85, 1, 1.2, 1.4, 1.6];
 
@@ -25,20 +26,26 @@
 	let steps = $state<CookModeStepType[]>([]);
 	let currentStepIndex = $state(0);
 	let textSizeIndex = $state(1);
+	let timers = $state<Timer[]>([]);
 
-	let unsubscribe: (() => void) | null = null;
+	let unsubCookMode: (() => void) | null = null;
+	let unsubTimers: (() => void) | null = null;
 
 	onMount(() => {
-		unsubscribe = subscribeCookMode((state) => {
+		unsubCookMode = subscribeCookMode((state) => {
 			isActive = state.isActive;
 			steps = state.steps;
 			currentStepIndex = state.currentStepIndex;
 			textSizeIndex = state.textSizeIndex;
 		});
+		unsubTimers = subscribeTimers((t) => {
+			timers = t;
+		});
 	});
 
 	onDestroy(() => {
-		if (unsubscribe) unsubscribe();
+		if (unsubCookMode) unsubCookMode();
+		if (unsubTimers) unsubTimers();
 	});
 
 	const currentStep = $derived(
@@ -50,6 +57,7 @@
 	const canIncrease = $derived(textSizeIndex < TEXT_SIZES.length - 1);
 	const canDecrease = $derived(textSizeIndex > 0);
 	const textScale = $derived(TEXT_SIZES[textSizeIndex]);
+	const runningTimerCount = $derived(timers.filter((t) => t.state === 'running').length);
 
 	function handleKeydown(event: KeyboardEvent) {
 		if (!isActive) return;
@@ -83,6 +91,7 @@
 			totalSteps={steps.length}
 			canIncreaseText={canIncrease}
 			canDecreaseText={canDecrease}
+			{runningTimerCount}
 			onExit={handleExit}
 			onIncreaseText={increaseTextSize}
 			onDecreaseText={decreaseTextSize}
@@ -92,7 +101,7 @@
 			<CookModeStep step={currentStep} scale={textScale} />
 		</main>
 
-		<CookModeTimerArea />
+		<CookModeTimerArea currentStepNumber={currentStepIndex + 1} />
 
 		<!-- Step navigation -->
 		<nav class="cook-mode-nav" aria-label="Step navigation">

@@ -10,12 +10,13 @@
 		totalSteps: number;
 		canIncreaseText: boolean;
 		canDecreaseText: boolean;
+		runningTimerCount: number;
 		onExit: () => void;
 		onIncreaseText: () => void;
 		onDecreaseText: () => void;
 	}
 
-	let { marker, currentStep, totalSteps, canIncreaseText, canDecreaseText, onExit, onIncreaseText, onDecreaseText }: Props = $props();
+	let { marker, currentStep, totalSteps, canIncreaseText, canDecreaseText, runningTimerCount, onExit, onIncreaseText, onDecreaseText }: Props = $props();
 
 	const progress = $derived(totalSteps > 0 ? ((currentStep) / totalSteps) * 100 : 0);
 </script>
@@ -41,7 +42,18 @@
 
 		<!-- Center: marker and step counter -->
 		<div class="header-center">
-			<span class="marker-badge">{marker}</span>
+			<div class="marker-row">
+				<span class="marker-badge">{marker}</span>
+				{#if runningTimerCount > 0}
+					<span class="timer-badge" aria-label="{runningTimerCount} timer{runningTimerCount > 1 ? 's' : ''} running">
+						<svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+							<circle cx="12" cy="12" r="10"></circle>
+							<polyline points="12 6 12 12 16 14"></polyline>
+						</svg>
+						{runningTimerCount}
+					</span>
+				{/if}
+			</div>
 			<span class="step-counter">Step {currentStep} of {totalSteps}</span>
 		</div>
 
@@ -126,6 +138,25 @@
 		color: var(--color-accent);
 		background-color: var(--color-highlight);
 		border-left: 3px solid var(--color-accent);
+		border-radius: var(--radius-sm);
+	}
+
+	.marker-row {
+		display: flex;
+		align-items: center;
+		gap: var(--spacing-sm);
+	}
+
+	.timer-badge {
+		display: inline-flex;
+		align-items: center;
+		gap: var(--spacing-xs);
+		padding: 2px var(--spacing-sm);
+		font-family: var(--font-body);
+		font-size: var(--font-size-small);
+		font-weight: 600;
+		color: var(--color-accent);
+		background-color: var(--color-highlight);
 		border-radius: var(--radius-sm);
 	}
 

@@ -7,6 +7,7 @@
 
 import type { CookModeStep } from '$lib/types';
 import { requestWakeLock, releaseWakeLock, setWakeLockEnabled } from './wakeLock';
+import { deleteAllTimers } from './timers';
 
 const TEXT_SIZE_KEY = 'mise-cook-mode-text-size';
 const TEXT_SIZES = [0.85, 1, 1.2, 1.4, 1.6] as const;
@@ -132,6 +133,9 @@ export function exitCookMode(): void {
 		steps: [],
 		currentStepIndex: 0
 	};
+
+	// Clear all timers
+	deleteAllTimers();
 
 	// Release wake lock
 	releaseWakeLock();

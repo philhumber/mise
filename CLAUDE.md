@@ -163,10 +163,11 @@ Full-screen, step-by-step cooking interface designed for kitchen use:
 - **Progress Tracking** - Visual progress bar and step counter
 - **Auto Wake Lock** - Screen stays awake during cooking
 - **Timeline Markers** - Displays current step's timeline context
+- **Integrated Timers** - Auto-detected durations from step text with quick-start buttons, manual timer creation, multiple concurrent timers, pause/resume, visual completion (pulsing)
 
 ## Roadmap Features
 
-- Built-in timers (MISE-68)
+- Timer notifications - audio/vibration alerts (MISE-69)
 - Unit conversion toggle (metric/imperial)
 - Recipe scaling
 
@@ -215,22 +216,25 @@ src/
 │   │   ├── MealIngredients.svelte  # Aggregated ingredients
 │   │   ├── CookMode.svelte         # Cook mode overlay shell
 │   │   ├── CookModeHeader.svelte   # Cook mode header with controls
-│   │   ├── CookModeStep.svelte     # Single step display
-│   │   └── CookModeTimerArea.svelte # Timer area placeholder
+│   │   ├── CookModeStep.svelte     # Single step display + timer suggestions
+│   │   ├── CookModeTimerArea.svelte # Active timers + add timer form
+│   │   └── TimerCard.svelte        # Individual timer display
 │   ├── stores/
 │   │   ├── theme.ts
 │   │   ├── pageTitle.ts
 │   │   ├── wakeLock.ts       # Wake lock state
-│   │   └── cookMode.ts       # Cook mode state
+│   │   ├── cookMode.ts       # Cook mode state
+│   │   └── timers.ts         # Timer state (independent store)
 │   ├── styles/
 │   │   └── tokens.css
 │   ├── types/
-│   │   └── index.ts          # Includes Meal, CookModeStep types
+│   │   └── index.ts          # Includes Meal, CookModeStep, Timer types
 │   └── utils/
 │       ├── ingredients.ts    # Ingredient group parser
 │       ├── search.ts         # Fuse.js fuzzy search
 │       ├── timeline.ts       # Timeline marker parsing
-│       └── steps.ts          # Cook mode step parser
+│       ├── steps.ts          # Cook mode step parser
+│       └── durations.ts      # Duration detection + formatting
 └── routes/
     ├── +layout.svelte
     ├── +layout.ts

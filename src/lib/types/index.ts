@@ -64,6 +64,30 @@ export interface CookModeStep {
 	htmlContent: string;
 }
 
+// === TIMER TYPES ===
+
+export type TimerState = 'running' | 'paused' | 'completed';
+
+export interface Timer {
+	id: string;
+	label: string;
+	durationSeconds: number;
+	remainingSeconds: number;
+	state: TimerState;
+	/** Timestamp (ms) when the timer was last started/resumed */
+	startedAt: number;
+	/** Accumulated elapsed seconds before last pause */
+	elapsedBeforePause: number;
+	/** Step number where timer was created */
+	stepNumber: number;
+}
+
+export interface DetectedDuration {
+	seconds: number;
+	label: string;
+	matchedText: string;
+}
+
 // === VALIDATION ===
 
 export interface ValidationError {

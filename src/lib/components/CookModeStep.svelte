@@ -6,6 +6,8 @@
 -->
 <script lang="ts">
 	import type { CookModeStep } from '$lib/types';
+	import { detectDurations, formatDurationShort } from '$lib/utils/durations';
+	import { createTimer } from '$lib/stores/timers';
 
 	interface Props {
 		step: CookModeStep;
@@ -13,6 +15,12 @@
 	}
 
 	let { step, scale = 1 }: Props = $props();
+
+	const durations = $derived(detectDurations(step.body));
+
+	function handleStartTimer(label: string, seconds: number) {
+		createTimer(label, seconds, step.number);
+	}
 </script>
 
 <div class="cook-mode-step" style="--text-scale: {scale}">
@@ -24,6 +32,24 @@
 
 	{#if step.body}
 		<p class="step-body">{step.body}</p>
+	{/if}
+
+	{#if durations.length > 0}
+		<div class="timer-suggestions" style="--text-scale: {scale}">
+			{#each durations as d}
+				<button
+					class="timer-suggest-btn"
+					onclick={() => handleStartTimer(d.label, d.seconds)}
+					aria-label="Start {d.label} timer for {formatDurationShort(d.seconds)}"
+				>
+					<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+						<circle cx="12" cy="12" r="10"></circle>
+						<polyline points="12 6 12 12 16 14"></polyline>
+					</svg>
+					{d.label} {formatDurationShort(d.seconds)}
+				</button>
+			{/each}
+		</div>
 	{/if}
 </div>
 
@@ -98,5 +124,41 @@
 		.step-body {
 			font-size: calc(18px * var(--text-scale, 1));
 		}
+	}
+
+	.timer-suggestions {
+		position: relative;
+		z-index: 1;
+		display: flex;
+		gap: var(--spacing-sm);
+		flex-wrap: wrap;
+		justify-content: center;
+		margin-top: var(--spacing-xl);
+	}
+
+	.timer-suggest-btn {
+		display: inline-flex;
+		align-items: center;
+		gap: var(--spacing-xs);
+		min-height: 40px;
+		padding: var(--spacing-sm) var(--spacing-lg);
+		font-family: var(--font-body);
+		font-size: calc(var(--font-size-meta) * var(--text-scale, 1));
+		font-weight: 500;
+		color: var(--color-accent);
+		background-color: transparent;
+		border: 1px solid var(--color-accent);
+		border-radius: var(--radius-sm);
+		cursor: pointer;
+		transition: all var(--transition-fast);
+	}
+
+	.timer-suggest-btn:hover {
+		background-color: var(--color-highlight);
+	}
+
+	.timer-suggest-btn:active {
+		background-color: var(--color-accent);
+		color: white;
 	}
 </style>
